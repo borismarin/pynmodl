@@ -1,0 +1,16 @@
+import comment
+
+Neuron: 'NEURON' '{' statements*=NRNStat '}';
+NRNStat: Suffix | Global | Range | Pointer | External | Nonspecific | UseIon;
+Suffix: 'SUFFIX' suffix=ID;
+Global: 'GLOBAL' globals+=ID[','];
+Range: 'RANGE' ranges+=ID[','];
+Pointer: 'POINTER' pointers+=ID[','];
+External: 'EXTERNAL' externals+=ID[','];
+Nonspecific: 'NONSPECIFIC_CURRENT' nonspecifics+=ID[','];
+
+UseIon: 'USEION' ion=ID (r=Read | w=Write | v=Valence)*;
+Read: 'READ' reads+=ID[','];
+Write: 'WRITE' writes+=ID[','];
+Valence: 'VALENCE' valence=INT;
+

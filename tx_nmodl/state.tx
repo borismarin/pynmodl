@@ -1,0 +1,2 @@
+import comment
+State: 'STATE' '{' state_vars*=ID '}';

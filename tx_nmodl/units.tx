@@ -1,0 +1,5 @@
+import comment
+Units: 'UNITS' '{' unit_defs*=UnitDef '}';
+UnitDef: left=UnitRef '=' right=UnitRef; //to become refs
+UnitRef: '(' unit=UnitId ')';
+UnitId:  /[_a-zA-Z][_a-zA-Z0-9\/]*/;

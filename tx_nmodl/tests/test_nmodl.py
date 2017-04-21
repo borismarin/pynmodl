@@ -9,6 +9,9 @@ def test_neuron():
     from textwrap import dedent
     p = dedent("""
         TITLE test!
+        UNITS {
+            (mV) = (millivolt)
+        }
         COMMENT
             time flies like an arrow
             fruit flies like a banana
@@ -33,6 +36,8 @@ def test_neuron():
     assert((u.r.reads, u.w.writes, u.v.valence) == (['ek'], ['ik'], 1))
 
     assert(prog.state.state_vars == ['m', 'h'])
+
+    assert(prog.units.unit_defs[0].base_unit == '(millivolt)')
 
     p0 = prog.parameter.parameters[0]
     assert(p0.name == 'ek')

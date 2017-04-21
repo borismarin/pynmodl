@@ -13,7 +13,7 @@ def test_unit():
     }
     ''')
     ud = mm.model_from_str(u).unit_defs[1]
-    l = ud.left.unit
-    r = ud.right.unit
-    assert((l, r) == ('mA', 'milliamp'))
+    l = ud.name
+    r = ud.base_unit
+    assert((l, r) == ('(mA)', '(milliamp)'))
 

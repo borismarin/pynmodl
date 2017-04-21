@@ -1,6 +1,7 @@
+import title
 import neuron
 import comment
 import state
+import parameter
 
-Program: (neuron=Neuron |  title=Title | state=State)*;
-Title: 'TITLE' title=/.*/;
+Program: (neuron=Neuron |  title=Title | state=State | parameter=Parameter)*;

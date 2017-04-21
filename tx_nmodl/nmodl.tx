@@ -3,5 +3,6 @@ import neuron
 import comment
 import state
 import parameter
+import units
 
-Program: (neuron=Neuron |  title=Title | state=State | parameter=Parameter)*;
+Program: (neuron=Neuron |  title=Title | state=State | parameter=Parameter | units=Units)*;

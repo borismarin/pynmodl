@@ -20,6 +20,9 @@ def test_neuron():
             RANGE gnabar, gkbar, gl, el
             NONSPECIFIC_CURRENT il
             }
+        PARAMETER {
+            ek (mV)  :typically~-77.5
+        }
         STATE{ m h }
         """)
     prog = mm.model_from_str(p)
@@ -31,4 +34,6 @@ def test_neuron():
 
     assert(prog.state.state_vars == ['m', 'h'])
 
-
+    p0 = prog.parameter.parameters[0]
+    assert(p0.name == 'ek')
+    assert(p0.unit == '(mV)')

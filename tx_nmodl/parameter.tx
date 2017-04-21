@@ -1,0 +1,9 @@
+import comment
+import units
+Parameter: 'PARAMETER' '{'parameters*=ParDef'}';
+ParDef: name=ID ('=' value=FLOAT)?  (unit=UnitId)?  ('<' llim=FLOAT ',' ulim=FLOAT '>')?;
+
+
+
+
+

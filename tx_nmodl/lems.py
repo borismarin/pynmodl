@@ -9,8 +9,8 @@ class LemsCompTypeGenerator(NModl):
             'Suffix': self.handle_suffix,
             'Read': self.handle_read,    # from USEION
             'Write': self.handle_write,  # from USEION
-            'ParDef': self.handle_param,  
-            'StateVariable': self.handle_state,  
+            'ParDef': self.handle_param,
+            'StateVariable': self.handle_state,
         })
         self.xml_skeleton()
 
@@ -35,8 +35,8 @@ class LemsCompTypeGenerator(NModl):
     def subel(self, type, attrs):
         return SubElement(self.where[type], type, attrib=attrs)
 
-    def compile(self, string):
-        self.mm.model_from_str(string)
+    def compile(self, model_str):
+        self.mm.model_from_str(model_str)
         self.comp_type.append(self.dynamics)
         return self.comp_type
 
@@ -59,9 +59,32 @@ class LemsCompTypeGenerator(NModl):
                       self.dynamics}
 
 
+class LemsComponentGenerator(NModl):
+    def __init__(self):
+        super().__init__()
+        self.mm.register_obj_processors({
+            'Suffix': self.handle_suffix,
+            'ParDef': self.handle_param,
+        })
+        self.par_vals = {}
+
+    def handle_suffix(self, suff):
+        self.id = suff.suffix + '_lems'
+
+    def handle_param(self, pardef):
+        self.par_vals[pardef.name] = str(pardef.value)
+
+    def compile(self, model_str):
+        self.mm.model_from_str(model_str)
+        comp_attr = {'id': self.id}
+        comp_attr.update(self.par_vals)
+        return Element(self.id, attrib=comp_attr)
+
+
 def mod2lems(mod_string):
 
     root = Element('neuroml')
     root.append(LemsCompTypeGenerator().compile(mod_string))
+    root.append(LemsComponentGenerator().compile(mod_string))
 
     return tostring(root)

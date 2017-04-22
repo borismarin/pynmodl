@@ -9,7 +9,8 @@ class LemsCompTypeGenerator(NModl):
             'Suffix': self.handle_suffix,
             'Read': self.handle_read,    # from USEION
             'Write': self.handle_write,  # from USEION
-            'ParDef': self.handle_param,  # from USEION
+            'ParDef': self.handle_param,  
+            'StateVariable': self.handle_state,  
         })
         self.xml_skeleton()
 
@@ -27,11 +28,16 @@ class LemsCompTypeGenerator(NModl):
     def handle_param(self, pardef):
         self.subel('Parameter', {'name': pardef.name, 'dimension': 'none'})
 
+    def handle_state(self, state):
+        self.subel('Exposure', {'name': state.name, 'dimension': 'none'})
+        self.subel('StateVariable', {'name': state.name, 'dimension': 'none'})
+
     def subel(self, type, attrs):
         return SubElement(self.where[type], type, attrib=attrs)
 
     def compile(self, string):
         self.mm.model_from_str(string)
+        self.comp_type.append(self.dynamics)
         return self.comp_type
 
     def xml_skeleton(self):

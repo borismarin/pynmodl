@@ -4,5 +4,6 @@ import comment
 import state
 import parameter
 import units
+import assigned
 
-Program: (neuron=Neuron |  title=Title | state=State | parameter=Parameter | units=Units)*;
+Program: (neuron=Neuron |  title=Title | state=State | parameter=Parameter | units=Units | assigned=Assigned)*;

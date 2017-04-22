@@ -1,7 +1,8 @@
 import os
 from textx.metamodel import metamodel_from_file
+from hack import metamodel_with_any_var
 
-mm = metamodel_from_file(
+mm = metamodel_with_any_var(
     os.path.join(os.path.dirname(__file__), '../neuron.tx'))
 
 
@@ -10,16 +11,18 @@ def test_neuron():
     nrn = dedent("""
     NEURON {
         SUFFIX hh1   : comment!
-        GLOBAL minf, hinf, ninf, mexp, hexp, nexp
+        GLOBAL minf, hinf
         USEION k WRITE ik READ ek VALENCE +1
-        RANGE gnabar, gkbar, gl, el
+        RANGE gnabar, gkbar
         NONSPECIFIC_CURRENT il
     }
     """)
     s, g, u, r, n = mm.model_from_str(nrn).statements
-    assert(g.globals == ['minf', 'hinf', 'ninf', 'mexp', 'hexp', 'nexp'])
+    assert([gg.name for gg in g.globals] == ['minf', 'hinf'])
     assert(s.suffix == 'hh1')
-    assert((u.r.reads, u.w.writes, u.v.valence) == (['ek'], ['ik'], 1))
+    assert([r.name for r in u.r.reads] == ['ek'])
+    assert([w.name for w in u.w.writes] == ['ik'])
+    assert(u.v.valence == 1)
 
 
 def test_multiple():
@@ -36,6 +39,6 @@ def test_multiple():
     }
     """)
     g1, s, g2 = mm.model_from_str(nrn).statements
-    assert(g1.globals == ['a', 'b'])
-    assert(g2.globals == ['x', 'y'])
+    assert([g.name for g in g1.globals] == ['a', 'b'])
+    assert([g.name for g in g2.globals] == ['x', 'y'])
     assert(s.suffix == 'suf')

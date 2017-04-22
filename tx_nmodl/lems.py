@@ -9,6 +9,7 @@ class LemsCompTypeGenerator(NModl):
             'Suffix': self.handle_suffix,
             'Read': self.handle_read,    # from USEION
             'Write': self.handle_write,  # from USEION
+            'ParDef': self.handle_param,  # from USEION
         })
         self.xml_skeleton()
 
@@ -22,6 +23,9 @@ class LemsCompTypeGenerator(NModl):
     def handle_write(self, write):
         for w in write.writes:
             self.subel('Exposure', {'name': w.name, 'dimension': 'none'})
+
+    def handle_param(self, pardef):
+        self.subel('Parameter', {'name': pardef.name, 'dimension': 'none'})
 
     def subel(self, type, attrs):
         return SubElement(self.where[type], type, attrib=attrs)

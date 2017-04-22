@@ -47,7 +47,7 @@ def test_neuron():
     assert([w.name for w in u.w.writes] == ['ik'])
     assert(u.v.valence == 1)
 
-    assert([sv for sv in prog.state.state_vars] == ['m', 'h'])
+    assert([sv.name for sv in prog.state.state_vars] == ['m', 'h'])
 
     assert(prog.units.unit_defs[0].base_unit == '(millivolt)')
 

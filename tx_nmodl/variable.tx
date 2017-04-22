@@ -1,4 +1,5 @@
 import parameter
 import assigned
+import state
 
-Variable: AssignedDef | ParDef;
+Variable: AssignedDef | ParDef | StateVariable;

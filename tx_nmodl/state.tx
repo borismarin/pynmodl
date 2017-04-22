@@ -1,2 +1,5 @@
 import comment
-State: 'STATE' '{' state_vars*=ID '}';
+import units
+
+State: 'STATE' '{' state_vars*=StateVariable '}';
+StateVariable: name=ID (unit=UnitId)?;

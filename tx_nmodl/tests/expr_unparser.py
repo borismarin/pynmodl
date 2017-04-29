@@ -26,7 +26,7 @@ class NoTypes(object):
             Primary: FuncCall | Paren | Num | Var ;
             Var:var=cID;
             Num: num=NUMBER;
-            FuncCall: func=cID'(' args*=Expression[',']  ')';
+            FuncCall: func=[FuncDef|cID]'(' args*=Expression[',']  ')';
             Paren: ('(' ex=Expression ')');
 
             Local: 'LOCAL' vars*=Var[','];

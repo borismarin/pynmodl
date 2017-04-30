@@ -1,41 +1,6 @@
-import os
-from textx.metamodel import metamodel_from_file
+from tx_nmodl.expr_compiler import ExprCompiler
 
-class ExprUnparser(object):
-    def __init__(self):
-        self.mm = metamodel_from_file(
-            os.path.join(os.path.dirname(__file__), 'expressions.tx'))
-        self.mm.register_obj_processors({
-            'Addition': self.addition,
-            'Multiplication': self.multiplication,
-            'Exponentiation': self.exponentiation,
-            'Negation': self.negation,
-            'Paren': self.paren,
-            'FuncCall': self.funccall,
-            'Num': self.num,
-            'VarRef': self.varref,
-            'PlusOrMinus': self.pm,
-            'MulOrDiv': self.md,
-            'Exp': self.exp,
-            'Assignment': self.assign,
-            'IfStatement': self.ifstmt,
-            'Relational': self.relational,
-            'LogicalCon': self.logicalcon,
-            'Block': self.block,
-            'RelOp': self.relop,
-            'LogCon': self.logcon,
-            'FuncDef': self.funcdef,
-            'Locals': self.locals,
-            'FuncPar': self.funcpar,
-            'Primed': self.primed,
-            'Local': self.local,
-        })
-
-    def t(self, type_str):
-        return self.mm.namespaces[None][type_str]
-
-    def is_txtype(self, obj, type_str):
-        return isinstance(obj, self.t(type_str))
+class Unparser(ExprCompiler):
 
     def binop(self, node):
         ops = [n.unparsed for n in node.op[1:]]
@@ -52,7 +17,7 @@ class ExprUnparser(object):
         self.binop(exp)
 
     def negation(self, neg):
-        s = neg.sign.unparsed if neg.sign else ''
+        s = neg.sign.o if neg.sign else ''
         v = neg.primary.unparsed
         neg.unparsed = s + v
 
@@ -80,7 +45,11 @@ class ExprUnparser(object):
 
     def funccall(self, f):
         args = [a.unparsed for a in f.args]
-        f.unparsed = '{}({})'.format(f.func.name, ', '.join(args))
+        if f.func.builtin:
+            fname = f.func.builtin
+        else:
+            fname = f.func.user.name
+        f.unparsed = '{}({})'.format(fname, ', '.join(args))
 
     def assign(self, asgn):
         var = asgn.variable
@@ -132,7 +101,7 @@ class ExprUnparser(object):
         expression = p.expression.unparsed
         p.unparsed = "{}' = {}".format(var, expression)
 
-    def unparse(self, mod):
+    def compile(self, mod):
         m = self.mm.model_from_str(mod)
         return m.unparsed
 

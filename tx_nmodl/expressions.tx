@@ -1,0 +1,43 @@
+Statement: Block | Primed | Assignment | IfStatement | 
+			WhileStatement | Locals | Expression;
+Block: '{' stmts*=Statement '}';
+
+IfStatement: 'if' '(' cond=Expression ')'
+				true_blk=Block ('else' false_blk=Block)?;
+WhileStatement: 'while' '(' cond=Expression ')' Block;
+
+Primed: variable=cID+"'" '='!'='? expression=LogicalCon;
+
+Expression: Assignment;
+Assignment: (variable=VarRef '='!'=')? expression=LogicalCon;
+LogicalCon: op=Relational (op=LogCon op=Relational)*;
+Relational: op=Addition (op=RelOp op=Addition)*;
+Addition: op=Multiplication (op=PlusOrMinus op=Multiplication)* ;
+Multiplication: op=Exponentiation (op=MulOrDiv op=Exponentiation)*;
+Exponentiation: op=Negation (op=Exp op=Exponentiation)?; //using Exponentiation? here for right assoc
+Negation: (sign=PlusOrMinus)?  primary=Primary;
+Primary: FuncCall | Paren | Num | VarRef ;
+
+
+Var: Local | FuncPar | FuncDef;
+VarRef: var=[Var|cID];
+Num: num=NUMBER;
+FuncCall: func=[FuncDef|cID]'(' args*=Expression[',']  ')';
+Paren: ('(' ex=Expression ')');
+
+Local: name=cID;
+Locals: 'LOCAL' vars*=Local[','];
+Unit: '(' cID ')';
+FuncPar: name=cID (unit=Unit)?; 
+FuncDef:  'FUNCTION' name=cID '(' pars*=FuncPar[','] ')' (unit=Unit)?  
+			b=Block;
+
+PlusOrMinus: o=/\+|\-/;
+MulOrDiv: o=/\*|\//;
+Exp: o='^';
+RelOp: o=/([<>]=?|[!=]=)/;
+LogCon: o=/(&&)|(\|\|)/;
+
+Keyword: 'if' | 'else' | 'while' | 'FUNCTION' | 'LOCAL' | 'G';
+cID: !Keyword ID; 
+NUMBER: /[-+]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?/;

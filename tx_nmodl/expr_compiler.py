@@ -33,7 +33,7 @@ class ExprCompiler(object):
         })
 
     def t(self, type_str):
-        return self.mm.namespaces[None][type_str]
+        return self.mm.namespaces['expressions'][type_str]
 
     def is_txtype(self, obj, type_str):
         return isinstance(obj, self.t(type_str))

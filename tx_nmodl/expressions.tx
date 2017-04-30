@@ -39,7 +39,7 @@ Exp: o='^';
 RelOp: o=/([<>]=?|[!=]=)/;
 LogCon: o=/(&&)|(\|\|)/;
 
-Builtin: 'sin' | 'cos' | 'tan' | 'exp' | 'log' | 'abs';
+Builtin: 'sin' | 'cos' | 'tan' | 'exp' | 'log' | 'abs' | 'fabs';
 Keyword: 'if' | 'else' | 'while' | 'FUNCTION' | 'LOCAL';
 cID: !Keyword ID;
 NUMBER: /[-+]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?/;

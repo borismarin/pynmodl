@@ -1,5 +1,5 @@
 Statement: Block | Primed | Assignment | IfStatement | 
-			WhileStatement | Locals | Expression;
+			WhileStatement | Locals | Expression | FuncDef;
 Block: '{' stmts*=Statement '}';
 
 IfStatement: 'if' '(' cond=Expression ')'

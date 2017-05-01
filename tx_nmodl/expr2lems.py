@@ -1,10 +1,6 @@
 from tx_nmodl.expr_compiler import ExprCompiler
 from textx.model import parent_of_type
 
-META_TMP = '{{{}}}'
-F_VAR_TMP = '_'.join(['{}', META_TMP, META_TMP])
-LOCAL_TMP = F_VAR_TMP + '__{}'
-
 
 class Lems(ExprCompiler):
 
@@ -28,8 +24,7 @@ class Lems(ExprCompiler):
         neg.lems = s + v
 
     def paren(self, par):
-        p = par.ex
-        par.lems = '(' + p + ')'
+        par.lems = '(' + par.ex.lems + ')'
 
     def num(self, num):
         num.lems = num.num
@@ -92,10 +87,10 @@ class Lems(ExprCompiler):
             asgn.lems = exp.lems
 
     def ifstmt(self, ifs):
-        iff = 'else\n' + ifs.false_blk.lems if ifs.false_blk else ''
+        iff = ifs.false_blk.lems if ifs.false_blk else ''
         ift = ifs.true_blk.lems if ifs.true_blk else ''
         cond = ifs.cond.lems
-        ifs.lems = '<CondDerVar>\n\t<Case cond="{}">\n<Case{}'.format(
+        ifs.lems = '<CondDerVar>\n\t<Case cond="{}" value="{}">\n<Case value="{}">'.format(
             cond, ift, iff)
 
     def block(self, b):
@@ -116,7 +111,7 @@ class Lems(ExprCompiler):
     def func_deps(self, node):
         from textx.model import children_of_type
         fcalls = children_of_type('FuncCall', node)
-        return '\n'.join([fc.deps for fc in fcalls] + [''])
+        return '\n'.join([fc.deps for fc in fcalls if fc.deps] + [''])
 
     def locals(self, loc):
         loc.lems = ''

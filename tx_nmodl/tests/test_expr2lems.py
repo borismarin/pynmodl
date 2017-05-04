@@ -51,7 +51,12 @@ def test_blocks():
                 <Case value="1 * 3"/>
               </ConditionalDerivedVariable>
               <DerivedVariable name="f_3" value="2 * f_3__b"/>
-              <TimeDerivative value="log(2) + f_3" variable="x"/>
+              <ConditionalDerivedVariable name="f_4__b">
+                <Case condition="4 .neq. 0" value="4"/>
+                <Case value="1 * 4"/>
+              </ConditionalDerivedVariable>
+              <DerivedVariable name="f_4" value="2 * f_4__b"/>
+              <TimeDerivative value="log(2) + f_3 + f_4" variable="x"/>
            </Dynamics>
         </ComponentType>
         '''
@@ -65,7 +70,7 @@ def test_blocks():
         }
         f = 2 * b
     }
-    x' = log(2) + f(3)
+    x' = log(2) + f(3) + f(4)
     }''')
     assert(xml_compare(mod, s))
 

@@ -29,7 +29,7 @@ class ExprCompiler(object):
             'Locals': self.locals,
             'FuncPar': self.funcpar,
             'Primed': self.primed,
-            'Local': self.local,
+            'Local': self.local, 
         })
 
     def t(self, type_str):

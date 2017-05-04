@@ -11,9 +11,8 @@ class Lems(ExprCompiler):
         self.L = L()
 
     def block(self, b):
-        if (parent_of_type('FuncDef', b) or children_of_type('FuncCall', b)):
-            return
-        self.process_block(b)
+        if not (parent_of_type('FuncDef', b) or children_of_type('FuncCall', b)):
+            self.process_block(b)
 
     def assign(self, asgn):
         var = asgn.variable
@@ -63,11 +62,11 @@ class Lems(ExprCompiler):
                                f.expression.lems.format(**context))
                     t.visited = True
                     f.visited = True
+            # TODO: multiple assignement to same var [x=y if(x<z){x=w}]
         for asgn in inner_asgns(root):
             if not asgn.visited:
                 self.L.dv(asgn.variable.lems.format(**context),
                           asgn.expression.lems.format(**context))
-                asgn.visited = True
 
     #  function def related methods
 

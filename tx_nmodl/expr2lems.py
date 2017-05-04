@@ -1,33 +1,34 @@
 from tx_nmodl.expr_compiler import ExprCompiler
-from textx.model import parent_of_type
+from textx.model import parent_of_type, children_of_type
+
+from sublems import L
 
 
 class Lems(ExprCompiler):
 
-    def binop(self, node):
-        ops = [n.lems for n in node.op[1:]]
-        l = node.op[0].lems
-        node.lems = l + ''.join(ops)
+    def __init__(self):
+        super().__init__()
+        self.L = L()
 
-    def addition(self, add):
-        self.binop(add)
+    def block(self, b):
+        if (parent_of_type('FuncDef', b) or children_of_type('FuncCall', b)):
+            return
+        self.process_block(b)
 
-    def multiplication(self, mul):
-        self.binop(mul)
+    def assign(self, asgn):
+        var = asgn.variable
+        exp = asgn.expression
+        if not var:
+            asgn.lems = exp.lems
+        asgn.visited = False
 
-    def exponentiation(self, exp):
-        self.binop(exp)
+    def ifstmt(self, ifs):
+        pass
 
-    def negation(self, neg):
-        s = neg.sign.lems if neg.sign else ''
-        v = neg.primary.lems
-        neg.lems = s + v
-
-    def paren(self, par):
-        par.lems = '(' + par.ex.lems + ')'
-
-    def num(self, num):
-        num.lems = num.num
+    def primed(self, p):
+        var = p.variable
+        expression = p.expression
+        self.L.dxdt(var, expression.lems)
 
     def mangle_name(self, root, pars, suff=None):
         par_ph = ['{' + p.name + '}' for p in pars]
@@ -47,8 +48,87 @@ class Lems(ExprCompiler):
             lems = ivar.name
         var.lems = lems
 
+    def process_block(self, root, context={}):
+        def inner_asgns(x):
+            return (a for a in children_of_type('Assignment', x)
+                    if a.variable)
+        for ifst in children_of_type('IfStatement', root):
+            # handling true/false assignments for the same var
+            for t, f in zip(inner_asgns(ifst.true_blk),
+                            inner_asgns(ifst.false_blk)):
+                if t.variable.var == f.variable.var:
+                    self.L.cdv(t.variable.lems.format(**context),
+                               ifst.cond.lems.format(**context),
+                               t.expression.lems.format(**context),
+                               f.expression.lems.format(**context))
+                    t.visited = True
+                    f.visited = True
+        for asgn in inner_asgns(root):
+            if not asgn.visited:
+                self.L.dv(asgn.variable.lems.format(**context),
+                          asgn.expression.lems.format(**context))
+                asgn.visited = True
+
+    #  function def related methods
+
+    def funcdef(self, f):
+        pass
+
+    def locals(self, loc):
+        pass
+
+    def local(self, loc):
+        parent = parent_of_type('FuncDef', loc)
+        locname = self.mangle_name(parent.name, parent.pars, loc.name)
+        loc.lems = locname
+
+    def funcpar(self, fp):
+        fp.lems = fp.name
+
+    def funccall(self, fc):
+        args = [a.lems for a in fc.args]
+        if fc.func.builtin:
+            fun = fc.func.builtin
+            lems = '{}({})'.format(fun, ', '.join(args))
+        else:
+            fun = fc.func.user
+            arg_val = dict(zip([p.name for p in fun.pars], args))
+            if fun.is_function:
+                lems = '{}_{}'.format(fun.name, '_'.join(args))
+            elif fun.is_procedure:
+                lems = ''  # only interested in side effects handled below
+            self.process_block(fun, arg_val)
+        fc.lems = lems
+
+    # methods below pertain to nodes handled by direct string generation
+
+    def negation(self, neg):
+        s = neg.sign.lems if neg.sign else ''
+        v = neg.primary.lems
+        neg.lems = s + v
+
+    def paren(self, par):
+        par.lems = '(' + par.ex.lems + ')'
+
+    def binop(self, node):
+        ops = [n.lems for n in node.op[1:]]
+        l = node.op[0].lems
+        node.lems = l + ''.join(ops)
+
+    def addition(self, add):
+        self.binop(add)
+
+    def multiplication(self, mul):
+        self.binop(mul)
+
+    def exponentiation(self, exp):
+        self.binop(exp)
+
+    def num(self, num):
+        num.lems = num.num
+
     def op(self, op):
-        op.lems = ' ' + op.o + ' '
+        op.lems = ' ' + self.L.ops.get(op.o, op.o) + ' '
 
     def pm(self, pm):
         self.op(pm)
@@ -58,71 +138,6 @@ class Lems(ExprCompiler):
 
     def exp(self, exp):
         self.op(exp)
-
-    def funccall(self, f):
-        args = [a.lems for a in f.args]
-        if f.func.builtin:
-            fun = f.func.builtin
-            f.deps = ''
-            lems = '{}({})'.format(fun, ', '.join(args))
-        else:
-            fun = f.func.user
-            arg_val = dict(zip([p.name for p in fun.pars], args))
-            f.deps = fun.template.format(**arg_val)
-            if fun.is_function:
-                lems = '{}_{}'.format(fun.name, '_'.join(args))
-            elif fun.is_procedure:
-                lems = f.deps
-        f.lems = lems
-
-    def assign(self, asgn):
-        var = asgn.variable
-        exp = asgn.expression
-        deps = self.func_deps(exp)
-        if var:
-            asgn.lems = deps +\
-                    '<DerivedVariable name="{}" value="{}"/>'.format(
-                        var.lems, exp.lems)
-        else:
-            asgn.lems = exp.lems
-
-    def ifstmt(self, ifs):
-        iff = ifs.false_blk.lems if ifs.false_blk else ''
-        ift = ifs.true_blk.lems if ifs.true_blk else ''
-        cond = ifs.cond.lems
-        ifs.lems = '<CondDerVar>\n\t<Case cond="{}" value="{}">\n<Case value="{}">'.format(
-            cond, ift, iff)
-
-    def block(self, b):
-        b.lems = ''.join([s.lems for s in b.stmts])
-
-    def funcdef(self, f):
-        stmts = [s.lems for s in f.b.stmts]
-        args = [p.lems for p in f.pars]
-        f.lems = ''
-        f.template = self.func_template(f, stmts, args)
-
-    def func_template(self, f, stmts, args):
-        from itertools import compress
-        is_asgn = map(lambda el: self.is_txtype(el, 'Assignment'), f.b.stmts)
-        asgns = [s for s in compress(stmts, is_asgn)]
-        return '\n'.join(asgns)
-
-    def func_deps(self, node):
-        from textx.model import children_of_type
-        fcalls = children_of_type('FuncCall', node)
-        return '\n'.join([fc.deps for fc in fcalls if fc.deps] + [''])
-
-    def locals(self, loc):
-        loc.lems = ''
-
-    def local(self, loc):
-        parent = parent_of_type('FuncDef', loc)
-        locname = self.mangle_name(parent.name, parent.pars, loc.name)
-        loc.lems = locname
-
-    def funcpar(self, fp):
-        fp.lems = fp.name
 
     def relational(self, l):
         self.binop(l)
@@ -136,14 +151,6 @@ class Lems(ExprCompiler):
     def relop(self, r):
         self.op(r)
 
-    def primed(self, p):
-        var = p.variable
-        expression = p.expression
-        lems = self.func_deps(expression) +\
-            '<TimeDerivative variable="{}" value="{}"/>'.format(
-                var, expression.lems)
-        p.lems = lems
-
     def compile(self, mod):
-        m = self.mm.model_from_str(mod)
-        return m.lems
+        self.mm.model_from_str(mod)
+        return self.L.render()

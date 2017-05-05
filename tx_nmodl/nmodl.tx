@@ -14,5 +14,5 @@ import keyword
 Program: (neuron=Neuron |  title=Title | state=State |
 	parameter=Parameter | units=Units | assigned=Assigned |
 	derivative=Derivative | breakpoint=Breakpoint |
-	FuncsProcs | initial=Initial |  UnitsCtrl)*;
-FuncsProcs: functions_procedures*=FuncDef;
+	functions_procedures=FuncsProcs | initial=Initial |  UnitsCtrl)*;
+FuncsProcs: fd*=FuncDef;

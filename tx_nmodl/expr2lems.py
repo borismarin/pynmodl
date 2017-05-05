@@ -36,11 +36,11 @@ class Lems(ExprCompiler):
 
     def varref(self, var):
         ivar = var.var
-        if(self.is_txtype(ivar, 'FuncPar')):
+        if type(ivar).__name__ == 'FuncPar':
             lems = '{{{}}}'.format(ivar.name)
-        elif(self.is_txtype(ivar, 'FuncDef')):
+        elif type(ivar).__name__ == 'FuncDef':
             lems = self.mangle_name(ivar.name, ivar.pars)
-        elif(self.is_txtype(ivar, 'Local')):
+        elif type(ivar).__name__ == 'Local':
             parent = parent_of_type('FuncDef', ivar)
             lems = self.mangle_name(parent.name, parent.pars, ivar.name)
         else:
@@ -84,6 +84,23 @@ class Lems(ExprCompiler):
     def funcpar(self, fp):
         fp.lems = fp.name
 
+    def visit_down(self, model_obj):
+        metaclass = self.mm[model_obj.__class__.__name__]
+        for metaattr in metaclass._tx_attrs.values():
+            # If attribute is containment reference go down
+            if metaattr.ref and metaattr.cont:
+                attr = getattr(model_obj, metaattr.name)
+                if attr:
+                    if metaattr.mult != '1':
+                        for obj in attr:
+                            if obj:
+                                self.visit_down(obj)
+                    else:
+                        self.visit_down(attr)
+        obj_processor = self.mm.obj_processors.get(metaclass.__name__, None)
+        if obj_processor:
+            obj_processor(model_obj)
+
     def funccall(self, fc):
         args = [a.lems for a in fc.args]
         if fc.func.builtin:
@@ -91,6 +108,9 @@ class Lems(ExprCompiler):
             lems = '{}({})'.format(fun, ', '.join(args))
         else:
             fun = fc.func.user
+            if not getattr(fun, 'visited', False):
+                self.visit_down(fun)
+                fun.visited = True
             arg_val = dict(zip([p.name for p in fun.pars], args))
             if fun.is_function:
                 lems = '{}_{}'.format(fun.name, '_'.join(args))

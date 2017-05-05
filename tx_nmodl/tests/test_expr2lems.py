@@ -103,3 +103,32 @@ def test_if():
     n' = alpha(42)}
     """
     assert(xml_compare(c.compile(mod), s))
+
+def test_after_if():
+    c = Lems()
+    s = '''
+    <ComponentType>
+      <Dynamics>
+        <DerivedVariable name="alpha_42__x" value="(42 + 55) / 10"/>
+        <ConditionalDerivedVariable name="alpha_42">
+          <Case condition="fabs(alpha_42__x) .gt. 1e-6"
+                value="0.1 * alpha_42__x / (1 - exp( - alpha_42__x))"/>
+          <Case value="0.1 / (1 - 0.5 * alpha_42__x)"/>
+        </ConditionalDerivedVariable>
+        <TimeDerivative variable="n" value="alpha_42"/>
+      </Dynamics>
+    </ComponentType>'''
+
+    mod = """
+    {n' = alpha(42)
+    FUNCTION alpha(Vm){
+        LOCAL x
+        x = (Vm + 55) / 10
+        if(fabs(x) > 1e-6){
+               alpha=0.1*x/(1-exp(-x))
+        }else{
+               alpha=0.1/(1-0.5*x)
+        }
+    }}
+    """
+    assert(xml_compare(c.compile(mod), s))

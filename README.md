@@ -1,58 +1,9 @@
-# nmodl
+# Parsing and compiling `nmodl` files ([NEURON simulator](http://neuron.yale.edu/neuron/))
 
-TODO: Write project description.
+This project provides infrastructure for parsing and post-processing (e.g.
+compiling) [`nmodl` files](https://www.neuron.yale.edu/neuron/static/docs/help/neuron/nmodl/nmodl.html),
+using the [textX](https://github.com/igordejanovic/textx) language workbench (python).
 
-This is textX language project scaffolding for language `nmodl`.
-
-textX grammar (a.k.a. meta-model in textX) can be found in
-`nmodl/nmodl.tx`.
-
-Meta-model loading, post-processing and registration can be found in
-`nmodl/lang.py`
-
-This language is registered in setuptools entry point `textx_lang` inside setup.py.
-After installation it will be visible to the textx tool.
-
-It is recommended to install this project in development mode during
-development.
-
-To do that run this from the project folder:
-
-    $ pip install -e .
-
-This command will list all registered languages.
-
-    $ textx list-langs
-
-To check the syntax of your grammar use:
-
-    $ textx check nmodl/nmodl.tx
-
-To visualize your grammar use:
-
-    $ textx vis nmodl/nmodl.tx
-
-This will produce `dot` file (see [GraphViz](http://graphviz.org/)).
-
-Render model image either by using dot tool:
-
-    $ dot -Tpng -O nmodl/nmodl.tx.dot
-
-or by using some of available `dot` viewers (e.g.
-[xdot](https://github.com/jrfonseca/xdot.py)):
-
-    $ xdot nmodl/nmodl.tx.dot
-
-
-Write model on your language and test its syntax with:
-
-    $ textx check -l nmodl <path to your model>
-
-Or visualize it with:
-
-    $ textx vis -l nmodl <path to your model>
-
-
-By all means, you should be using
-[virtualenv](https://github.com/pypa/virtualenv).
+Currently, there are two experimental backends: unparsing (a good starting point for
+developing new targets) and [LEMS](https://github.com/LEMS/LEMS).
 

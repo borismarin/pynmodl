@@ -1,10 +1,10 @@
-import keyword
 import comment
+import keyword
 import variable
 import units
 
 Statement: Block | Primed | Assignment | IfStatement | 
-			WhileStatement | Locals | Expression | FuncDef;
+			WhileStatement | Locals | Expression | FuncDef | UnitsCtrl;
 Block: '{' stmts*=Statement '}';
 
 IfStatement: 'if' '(' cond=Expression ')'

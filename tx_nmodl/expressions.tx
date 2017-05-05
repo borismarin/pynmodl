@@ -1,5 +1,6 @@
 import keyword
 import comment
+import variable
 import units
 
 Statement: Block | Primed | Assignment | IfStatement | 
@@ -23,7 +24,7 @@ Negation: (sign=PlusOrMinus)?  primary=Primary;
 Primary: FuncCall | Paren | Num | VarRef ;
 
 
-Var: Local | FuncPar | FuncDef;
+Var: Local | FuncPar | Variable | FuncDef; // FuncDef here because of function return val syntax
 VarRef: var=[Var|cID];
 Num: num=NUMBER (unit=UnitId)?;
 Func: builtin=Builtin | user=[FuncDef|cID];

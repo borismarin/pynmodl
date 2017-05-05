@@ -5,5 +5,6 @@ import derivative
 
 Breakpoint: 'BREAKPOINT' '{' statements*=BreakStatement '}';
 BreakStatement: Solve | Statement ;
-Solve: 'SOLVE' solve=[Derivative] (method='METHOD' ID)?;
+Solve: 'SOLVE' solve=[Solvable|cID] (method='METHOD' ID)?;
+Solvable: Derivative| FuncDef;
 

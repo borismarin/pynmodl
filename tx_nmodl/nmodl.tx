@@ -1,6 +1,6 @@
+import comment
 import title
 import neuron
-import comment
 import state
 import parameter
 import units
@@ -9,8 +9,10 @@ import derivative
 import breakpoint
 import expressions
 import initial
+import keyword
 
 Program: (neuron=Neuron |  title=Title | state=State |
 	parameter=Parameter | units=Units | assigned=Assigned |
 	derivative=Derivative | breakpoint=Breakpoint |
-	functions_procedures=FuncDef)*;
+	FuncsProcs | initial=Initial |  UnitsCtrl)*;
+FuncsProcs: functions_procedures*=FuncDef;

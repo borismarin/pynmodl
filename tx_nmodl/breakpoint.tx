@@ -1,6 +1,7 @@
 import comment
 import variable
 import expressions
+import derivative
 
 Breakpoint: 'BREAKPOINT' '{' statements*=BreakStatement '}';
 BreakStatement: Solve | Statement ;

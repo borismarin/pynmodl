@@ -2,22 +2,26 @@ from xml.etree.ElementTree import Element, SubElement, Comment
 
 
 class ComponentTypeHelper(object):
-    def __init__(self):
-        self.comp_type = Element('ComponentType', attrib={
-            'extends': 'baseIonChannel'})
-        self.comp_type.append(
-            Comment('The defs below are hardcoded for testing purposes!'))
-        SubElement(self.comp_type, 'Constant', attrib={
-            'dimension': 'voltage', 'name': 'MV', 'value': '1mV'})
-        SubElement(self.comp_type, 'Constant', attrib={
-            'dimension': 'time', 'name': 'MS', 'value': '1ms'})
-        SubElement(self.comp_type, 'Requirement', attrib={
-            'name': 'v', 'dimension': 'voltage'})
-        self.comp_type.append(Comment('End of hardcoded defs!'))
+
+    OPS = {'>': '.gt.', '>=': '.geq.', '<': '.lt.', '<=': '.leq.',
+           '!=': '.neq.', '==': '.eq.', '&&': '.and.', '||': '.or.'}
+
+    def __init__(self, nml_boiler=False):
+
+        self.comp_type = Element('ComponentType')
         self.dynamics = Element('Dynamics')
 
-    ops = {'>': '.gt.', '>=': '.geq.', '<': '.lt.', '<=': '.leq.',
-           '!=': '.neq.', '==': '.eq.', '&&': '.and.', '||': '.or.'}
+        if nml_boiler:
+            self.comp_type.set('extends', 'baseIonChannel')
+            self.comp_type.append(
+                Comment('The defs below are hardcoded for testing purposes!'))
+            SubElement(self.comp_type, 'Constant', attrib={
+                'dimension': 'voltage', 'name': 'MV', 'value': '1mV'})
+            SubElement(self.comp_type, 'Constant', attrib={
+                'dimension': 'time', 'name': 'MS', 'value': '1ms'})
+            SubElement(self.comp_type, 'Requirement', attrib={
+                'name': 'v', 'dimension': 'voltage'})
+            self.comp_type.append(Comment('End of hardcoded defs!'))
 
     def dv(self, name, val):
         SubElement(self.dynamics, 'DerivedVariable',

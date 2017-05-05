@@ -1,5 +1,8 @@
-from tx_nmodl.nmodl import NModl
+from xml.etree.ElementTree import Element, tostring
+from xml.dom.minidom import parseString
 from textx.model import children_of_type, parent_of_type
+
+from tx_nmodl.nmodl import NModl
 from lems_helpers import ComponentTypeHelper, ComponentHelper
 
 
@@ -52,7 +55,11 @@ class LemsCompTypeGenerator(NModl):
             self.L.exp(w.name, 'none')
 
     def handle_param(self, pardef):
-        self.L.par(pardef.name, 'none')
+        pname = pardef.name
+        if pname in ['v', 'celsius']:
+            self.L.req(pname, 'none')
+        else:
+            self.L.par(pname, 'none')
 
     def handle_state(self, state):
         self.L.exp(state.name, 'none')
@@ -184,7 +191,7 @@ class LemsCompTypeGenerator(NModl):
         node.lems = l + ''.join(ops)
 
     def op(self, op):
-        op.lems = ' ' + self.L.ops.get(op.o, op.o) + ' '
+        op.lems = ' ' + self.L.OPS.get(op.o, op.o) + ' '
 
     def handle_negation(self, neg):
         s = neg.sign.lems if neg.sign else ''
@@ -231,6 +238,11 @@ class LemsCompTypeGenerator(NModl):
         self.mm.model_from_str(model_str)
         return self.L.render()
 
+    def compile_to_string(self, model_str):
+        '''Render the ComponentType ElementTree as a string'''
+        s = parseString(tostring(self.compile(model_str)))
+        return s.toprettyxml()
+
 
 class LemsComponentGenerator(NModl):
     def __init__(self):
@@ -249,12 +261,17 @@ class LemsComponentGenerator(NModl):
         self.L.par_vals[pardef.name] = str(pardef.value)
 
     def compile(self, model_str):
+        '''Generate an ElementTree describing a Lems ComponentType'''
         self.mm.model_from_str(model_str)
         return self.L.render()
 
+    def compile_to_string(self, model_str):
+        '''Render the ComponentType ElementTree as a string'''
+        s = parseString(tostring(self.compile(model_str)))
+        return s.toprettyxml()
+
 
 def mod2lems(mod_string):
-    from xml.etree.ElementTree import Element, tostring
 
     root = Element('neuroml')
     root.append(LemsCompTypeGenerator().compile(mod_string))

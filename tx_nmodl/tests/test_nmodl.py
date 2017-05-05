@@ -120,3 +120,7 @@ def test_neuron():
     p0 = prog.parameter.parameters[0]
     assert(p0.name == 'v')
     assert(p0.unit == '(mV)')
+
+    solve = prog.breakpoint.statements[0]
+    assert solve.solve.name == 'states' # this is the actual PROCEDURE
+

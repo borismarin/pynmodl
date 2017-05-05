@@ -1,3 +1,7 @@
+import keyword
+import comment
+import units
+
 Statement: Block | Primed | Assignment | IfStatement | 
 			WhileStatement | Locals | Expression | FuncDef;
 Block: '{' stmts*=Statement '}';
@@ -6,7 +10,7 @@ IfStatement: 'if' '(' cond=Expression ')'
 				true_blk=Block ('else' false_blk=Block)?;
 WhileStatement: 'while' '(' cond=Expression ')' Block;
 
-Primed: variable=cID+"'" '='!'='? expression=LogicalCon;
+Primed: variable=cID+/'+/ '='!'='? expression=LogicalCon;
 
 Expression: Assignment;
 Assignment: (variable=VarRef '='!'=')? expression=LogicalCon;
@@ -21,17 +25,16 @@ Primary: FuncCall | Paren | Num | VarRef ;
 
 Var: Local | FuncPar | FuncDef;
 VarRef: var=[Var|cID];
-Num: num=NUMBER;
+Num: num=NUMBER (unit=UnitId)?;
 Func: builtin=Builtin | user=[FuncDef|cID];
 FuncCall: func=Func '(' args*=Expression[',']  ')';
 Paren: ('(' ex=Expression ')');
 
 Local: name=cID;
 Locals: 'LOCAL' vars*=Local[','];
-Unit: '(' cID ')';
-FuncPar: name=cID (unit=Unit)?; 
+FuncPar: name=cID (unit=UnitId)?; 
 FuncDef:  (is_function?='FUNCTION' | is_procedure?='PROCEDURE')
-			name=cID '(' pars*=FuncPar[','] ')' (unit=Unit)?  b=Block;
+			name=cID '(' pars*=FuncPar[','] ')' (unit=UnitId)?  b=Block;
 
 PlusOrMinus: o=/\+|\-/;
 MulOrDiv: o=/\*|\//;
@@ -40,6 +43,5 @@ RelOp: o=/([<>]=?|[!=]=)/;
 LogCon: o=/(&&)|(\|\|)/;
 
 Builtin: 'sin' | 'cos' | 'tan' | 'exp' | 'log' | 'abs' | 'fabs';
-Keyword: 'if' | 'else' | 'while' | 'FUNCTION' | 'LOCAL';
 cID: !Keyword ID;
 NUMBER: /[-+]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?/;

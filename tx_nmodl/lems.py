@@ -1,14 +1,13 @@
-from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 from tx_nmodl.nmodl import NModl
 from textx.model import children_of_type, parent_of_type
+from lems_helpers import ComponentTypeHelper, ComponentHelper
 
 
 class LemsCompTypeGenerator(NModl):
-    ops = {'>': '.gt.', '>=': '.geq.', '<': '.lt.', '<=': '.leq.',
-           '!=': '.neq.', '==': '.eq.', '&&': '.and.', '||': '.or.'}
 
     def __init__(self):
         super().__init__()
+        self.L = ComponentTypeHelper()
         self.mm.register_obj_processors({
             'Suffix': self.handle_suffix,
             'Read': self.handle_read,
@@ -40,25 +39,24 @@ class LemsCompTypeGenerator(NModl):
             'Primed': self.handle_primed,
             'Local': self.handle_local,
         })
-        self.xml_skeleton()
 
     def handle_suffix(self, suf):
-        self.comp_type.attrib['id'] = suf.suffix
+        self.L.comp_type.attrib['id'] = suf.suffix
 
     def handle_read(self, read):
         for r in read.reads:
-            self.subel('Requirement', {'name': r.name, 'dimension': 'none'})
+            self.L.req(r.name, 'none')
 
     def handle_write(self, write):
         for w in write.writes:
-            self.subel('Exposure', {'name': w.name, 'dimension': 'none'})
+            self.L.exp(w.name, 'none')
 
     def handle_param(self, pardef):
-        self.subel('Parameter', {'name': pardef.name, 'dimension': 'none'})
+        self.L.par(pardef.name, 'none')
 
     def handle_state(self, state):
-        self.subel('Exposure', {'name': state.name, 'dimension': 'none'})
-        self.subel('StateVariable', {'name': state.name, 'dimension': 'none'})
+        self.L.exp(state.name, 'none')
+        self.L.state(state.name, 'none')
 
     def handle_block(self, b):
         if not (parent_of_type('FuncDef', b) or
@@ -78,7 +76,7 @@ class LemsCompTypeGenerator(NModl):
     def handle_primed(self, p):
         var = p.variable
         expression = p.expression
-        self.dxdt(var, expression.lems)
+        self.L.dxdt(var, expression.lems)
 
     def mangle_name(self, root, pars, suff=None):
         par_ph = ['{' + p.name + '}' for p in pars]
@@ -107,17 +105,17 @@ class LemsCompTypeGenerator(NModl):
             for t, f in zip(inner_asgns(ifst.true_blk),
                             inner_asgns(ifst.false_blk)):
                 if t.variable.var == f.variable.var:
-                    self.cdv(t.variable.lems.format(**context),
-                             ifst.cond.lems.format(**context),
-                             t.expression.lems.format(**context),
-                             f.expression.lems.format(**context))
+                    self.L.cdv(t.variable.lems.format(**context),
+                               ifst.cond.lems.format(**context),
+                               t.expression.lems.format(**context),
+                               f.expression.lems.format(**context))
                     t.visited = True
                     f.visited = True
             # TODO: multiple assignement to same var [x=y if(x<z){x=w}]
         for asgn in inner_asgns(root):
             if not asgn.visited:
-                self.dv(asgn.variable.lems.format(**context),
-                        asgn.expression.lems.format(**context))
+                self.L.dv(asgn.variable.lems.format(**context),
+                          asgn.expression.lems.format(**context))
 
     #  function def related methods
 
@@ -186,7 +184,7 @@ class LemsCompTypeGenerator(NModl):
         node.lems = l + ''.join(ops)
 
     def op(self, op):
-        op.lems = ' ' + self.ops.get(op.o, op.o) + ' '
+        op.lems = ' ' + self.L.ops.get(op.o, op.o) + ' '
 
     def handle_negation(self, neg):
         s = neg.sign.lems if neg.sign else ''
@@ -229,45 +227,9 @@ class LemsCompTypeGenerator(NModl):
     def handle_relop(self, r):
         self.op(r)
 
-    def subel(self, type, attrs):
-        return SubElement(self.where[type], type, attrib=attrs)
-
-    def dv(self, name, val):
-        SubElement(self.dynamics, 'DerivedVariable',
-                   attrib={'name': name, 'value': val})
-
-    def dxdt(self, var, val):
-        SubElement(self.dynamics, 'TimeDerivative',
-                   attrib={'variable': var, 'value': val})
-
-    def cdv(self, name, cond, if_true, if_false):
-        cdv = SubElement(self.dynamics, 'ConditionalDerivedVariable',
-                         attrib={'name': name})
-        SubElement(cdv, 'Case', attrib={'condition': cond, 'value': if_true})
-        SubElement(cdv, 'Case', attrib={'value': if_false})
-
     def compile(self, model_str):
         self.mm.model_from_str(model_str)
-        self.comp_type.append(self.dynamics)
-        return self.comp_type
-
-    def xml_skeleton(self):
-        self.comp_type = Element('ComponentType', attrib={
-            'extends': 'baseIonChannel'})
-        self.comp_type.append(
-            Comment('The defs below are hardcoded for testing purposes!'))
-        SubElement(self.comp_type, 'Constant', attrib={
-            'dimension': 'voltage', 'name': 'MV', 'value': '1mV'})
-        SubElement(self.comp_type, 'Constant', attrib={
-            'dimension': 'time', 'name': 'MS', 'value': '1ms'})
-        SubElement(self.comp_type, 'Requirement', attrib={
-            'name': 'v', 'dimension': 'voltage'})
-        self.comp_type.append(Comment('End of hardcoded defs!'))
-        self.dynamics = Element('Dynamics')
-        self.where = {'Parameter': self.comp_type, 'Requirement':
-                      self.comp_type, 'Exposure': self.comp_type,
-                      'DerivedVariable': self.dynamics, 'StateVariable':
-                      self.dynamics}
+        return self.L.render()
 
 
 class LemsComponentGenerator(NModl):
@@ -277,22 +239,22 @@ class LemsComponentGenerator(NModl):
             'Suffix': self.handle_suffix,
             'ParDef': self.handle_param,
         })
+        self.L = ComponentHelper()
         self.par_vals = {}
 
     def handle_suffix(self, suff):
-        self.id = suff.suffix + '_lems'
+        self.L.id = suff.suffix + '_lems'
 
     def handle_param(self, pardef):
-        self.par_vals[pardef.name] = str(pardef.value)
+        self.L.par_vals[pardef.name] = str(pardef.value)
 
     def compile(self, model_str):
         self.mm.model_from_str(model_str)
-        comp_attr = {'id': self.id}
-        comp_attr.update(self.par_vals)
-        return Element(self.id, attrib=comp_attr)
+        return self.L.render()
 
 
 def mod2lems(mod_string):
+    from xml.etree.ElementTree import Element, tostring
 
     root = Element('neuroml')
     root.append(LemsCompTypeGenerator().compile(mod_string))

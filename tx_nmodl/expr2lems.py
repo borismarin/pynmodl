@@ -85,18 +85,24 @@ class Lems(ExprCompiler):
         fp.lems = fp.name
 
     def visit_down(self, model_obj):
-        metaclass = self.mm[model_obj.__class__.__name__]
-        for metaattr in metaclass._tx_attrs.values():
-            # If attribute is containment reference go down
-            if metaattr.ref and metaattr.cont:
-                attr = getattr(model_obj, metaattr.name)
-                if attr:
-                    if metaattr.mult != '1':
-                        for obj in attr:
-                            if obj:
-                                self.visit_down(obj)
-                    else:
-                        self.visit_down(attr)
+        MULT_ONE = '1'
+        PRIMITIVE_PYTHON_TYPES = [int, float, str, bool]
+
+        if type(model_obj) in PRIMITIVE_PYTHON_TYPES:
+            metaclass = type(model_obj)
+        else:
+            metaclass = self.mm[model_obj.__class__.__name__]
+            for metaattr in metaclass._tx_attrs.values():
+                # If attribute is containment reference go down
+                if metaattr.ref and metaattr.cont:
+                    attr = getattr(model_obj, metaattr.name)
+                    if attr:
+                        if metaattr.mult != MULT_ONE:
+                            for obj in attr:
+                                if obj:
+                                    self.visit_down(obj)
+                        else:
+                            self.visit_down(attr)
         obj_processor = self.mm.obj_processors.get(metaclass.__name__, None)
         if obj_processor:
             obj_processor(model_obj)

@@ -2,7 +2,7 @@ import comment
 import variable
 import expressions
 
-Derivative: 'BREAKPOINT' '{' statements*=BreakStatement '}';
+Breakpoint: 'BREAKPOINT' '{' statements*=BreakStatement '}';
 BreakStatement: Solve | Statement ;
 Solve: 'SOLVE' solve=[Derivative] (method='METHOD' ID)?;
 

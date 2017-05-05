@@ -1,4 +1,4 @@
-# Parsing and compiling `nmodl` files ([NEURON simulator](http://neuron.yale.edu/neuron/))
+# Parsing and compiling `nmodl` files ([ɴᴇᴜʀᴏɴ simulator](http://neuron.yale.edu/neuron/))
 
 This project provides infrastructure for parsing and post-processing (e.g.
 compiling) [`nmodl` files](https://www.neuron.yale.edu/neuron/static/docs/help/neuron/nmodl/nmodl.html),

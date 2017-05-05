@@ -5,7 +5,7 @@ from textx.metamodel import metamodel_from_file
 class ExprCompiler(object):
     def __init__(self):
         self.mm = metamodel_from_file(
-            os.path.join(os.path.dirname(__file__), 'expressions.tx'))
+            os.path.join(os.path.dirname(__file__), 'grammar/expressions.tx'))
         self.mm.register_obj_processors({
             'Addition': self.addition,
             'Multiplication': self.multiplication,

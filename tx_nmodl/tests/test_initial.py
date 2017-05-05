@@ -3,7 +3,7 @@ from hack import metamodel_with_any_var
 from textx.model import children_of_type
 
 mm = metamodel_with_any_var(
-    os.path.join(os.path.dirname(__file__), '../initial.tx'))
+    os.path.join(os.path.dirname(__file__), '../grammar/initial.tx'))
 
 def test_initial():
     nrn ='''

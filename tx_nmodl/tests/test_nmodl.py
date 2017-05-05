@@ -6,8 +6,7 @@ mm = metamodel_from_file(
 
 
 def test_neuron():
-    from textwrap import dedent
-    p = dedent("""
+    p = """
         TITLE test!
         UNITS {
             (mV) = (millivolt)
@@ -37,7 +36,7 @@ def test_neuron():
             el (mV)
         }
         STATE{ m h }
-        """)
+        """
     prog = mm.model_from_str(p)
 
     s, g, u, r, n = prog.neuron.statements

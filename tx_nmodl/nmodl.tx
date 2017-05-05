@@ -5,5 +5,12 @@ import state
 import parameter
 import units
 import assigned
+import derivative
+import breakpoint
+import expressions
+import initial
 
-Program: (neuron=Neuron |  title=Title | state=State | parameter=Parameter | units=Units | assigned=Assigned)*;
+Program: (neuron=Neuron |  title=Title | state=State |
+	parameter=Parameter | units=Units | assigned=Assigned |
+	derivative=Derivative | breakpoint=Breakpoint |
+	functions_procedures=FuncDef)*;

@@ -2,46 +2,15 @@ from xml.etree.ElementTree import Element, tostring
 from xml.dom.minidom import parseString
 from textx.model import children_of_type, parent_of_type
 
-from tx_nmodl.nmodl import NModl
+from tx_nmodl.nmodl import NModlCompiler
 from lems_helpers import ComponentTypeHelper, ComponentHelper
 
 
-class LemsCompTypeGenerator(NModl):
+class LemsCompTypeGenerator(NModlCompiler):
 
     def __init__(self):
         super().__init__()
         self.L = ComponentTypeHelper()
-        self.mm.register_obj_processors({
-            'Suffix': self.handle_suffix,
-            'Read': self.handle_read,
-            'Write': self.handle_write,
-            'ParDef': self.handle_param,
-            'StateVariable': self.handle_state,
-            # expression-related
-            'Addition': self.handle_addition,
-            'Multiplication': self.handle_multiplication,
-            'Exponentiation': self.handle_exponentiation,
-            'Negation': self.handle_negation,
-            'Paren': self.handle_paren,
-            'FuncCall': self.handle_funccall,
-            'Num': self.handle_num,
-            'VarRef': self.handle_varref,
-            'PlusOrMinus': self.handle_pm,
-            'MulOrDiv': self.handle_md,
-            'Exp': self.handle_exp,
-            'Assignment': self.handle_assign,
-            'IfStatement': self.handle_ifstmt,
-            'Relational': self.handle_relational,
-            'LogicalCon': self.handle_logicalcon,
-            'Block': self.handle_block,
-            'RelOp': self.handle_relop,
-            'LogCon': self.handle_logcon,
-            'FuncDef': self.handle_funcdef,
-            'Locals': self.handle_locals,
-            'FuncPar': self.handle_funcpar,
-            'Primed': self.handle_primed,
-            'Local': self.handle_local,
-        })
 
     def handle_suffix(self, suf):
         self.L.comp_type.attrib['id'] = suf.suffix
@@ -76,9 +45,6 @@ class LemsCompTypeGenerator(NModl):
         if not var:
             asgn.lems = exp.lems
         asgn.visited = False
-
-    def handle_ifstmt(self, ifs):
-        pass
 
     def handle_primed(self, p):
         var = p.variable
@@ -129,9 +95,6 @@ class LemsCompTypeGenerator(NModl):
     def handle_funcdef(self, f):
         if not getattr(f, 'visited_with_args', False):
             f.visited_with_args = []
-
-    def handle_locals(self, loc):
-        pass
 
     def handle_local(self, loc):
         parent = parent_of_type('FuncDef', loc)
@@ -244,7 +207,7 @@ class LemsCompTypeGenerator(NModl):
         return s.toprettyxml()
 
 
-class LemsComponentGenerator(NModl):
+class LemsComponentGenerator(NModlCompiler):
     def __init__(self):
         super().__init__()
         self.mm.register_obj_processors({

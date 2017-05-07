@@ -70,6 +70,7 @@ class LemsCompTypeGenerator(NModlCompiler):
         var.lems = lems
 
     def process_block(self, root, context={}):
+        # TODO: consider moving convoluted traversal to _model_ processor
         def inner_asgns(x):
             return (a for a in children_of_type('Assignment', x)
                     if a.variable)

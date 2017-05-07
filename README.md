@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/borismarin/nmodl-lems.svg?branch=master)](https://travis-ci.org/borismarin/nmodl-lems)
 # Parsing and compiling `nmodl` files ([ɴᴇᴜʀᴏɴ simulator](http://neuron.yale.edu/neuron/))
 
 This project provides infrastructure for parsing and post-processing (e.g.

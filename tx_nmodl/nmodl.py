@@ -9,11 +9,16 @@ class NModlCompiler(object):
             os.path.join(curr_dir, 'grammar', 'nmodl.tx'))
 
         self.mm.register_obj_processors({
+            # NEURON
             'Suffix': self.handle_suffix,
             'Read': self.handle_read,
             'Write': self.handle_write,
             'ParDef': self.handle_param,
             'StateVariable': self.handle_state,
+
+            'Program': self.handle_program,
+            'FuncsProcs': self.handle_funcsprocs,
+
             # expression-related
             'Addition': self.handle_addition,
             'Multiplication': self.handle_multiplication,
@@ -39,6 +44,12 @@ class NModlCompiler(object):
             'Primed': self.handle_primed,
             'Local': self.handle_local,
         })
+
+    def handle_funcsprocs(self, node):
+        pass
+
+    def handle_program(self, node):
+        pass
 
     def handle_suffix(self, node):
         pass

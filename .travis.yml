@@ -4,9 +4,7 @@ python:
   #  - 2.7  travis can't find pytest for 2.6??
   - 3.6
 
-install: pip install textx xmltodict
-
 script:
   - cd tx_nmodl
-  - pytest
+  - pytest -s
 

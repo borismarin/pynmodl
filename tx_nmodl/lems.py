@@ -3,7 +3,7 @@ from xml.dom.minidom import parseString
 from textx.model import children_of_type, parent_of_type
 
 from tx_nmodl.nmodl import NModlCompiler
-from lems_helpers import ComponentTypeHelper, ComponentHelper
+from tx_nmodl.lems_helpers import ComponentTypeHelper, ComponentHelper
 
 
 class LemsCompTypeGenerator(NModlCompiler):

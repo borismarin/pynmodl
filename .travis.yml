@@ -1,0 +1,12 @@
+language: python
+
+python:
+  #  - 2.7  travis can't find pytest for 2.6??
+  - 3.6
+
+install: pip install textx xlmtodict
+
+script:
+  - cd tx_nmodl
+  - pytest
+

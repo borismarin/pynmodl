@@ -1,5 +1,5 @@
 import os
-from tx_nmodl.lems import mod2lems
+from pynmodl.lems import mod2lems
 
 def get_sample(fname):
     return os.path.join(os.path.dirname(__file__), 'sample_mods', fname)

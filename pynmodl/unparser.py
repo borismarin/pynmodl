@@ -1,5 +1,5 @@
 from textwrap import indent
-from tx_nmodl.nmodl import NModlCompiler
+from pynmodl.nmodl import NModlCompiler
 
 
 def ind(x):

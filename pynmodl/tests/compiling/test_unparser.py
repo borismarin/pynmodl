@@ -1,6 +1,6 @@
 import pytest
 from textwrap import dedent
-from tx_nmodl.unparser import Unparser
+from pynmodl.unparser import Unparser
 import re
 
 unp = Unparser().compile

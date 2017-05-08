@@ -1,5 +1,5 @@
 include README.md
 include LICENSE
-include tx_nmodl/grammar/*.tx
+include pynmodl/grammar/*.tx
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]

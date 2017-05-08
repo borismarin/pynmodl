@@ -1,4 +1,4 @@
-from tx_nmodl.lems import LemsCompTypeGenerator
+from pynmodl.lems import LemsCompTypeGenerator
 from xmlcomp import xml_compare
 
 

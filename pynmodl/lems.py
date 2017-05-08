@@ -2,8 +2,8 @@ from xml.etree.ElementTree import Element, tostring
 from xml.dom.minidom import parseString
 from textx.model import children_of_type, parent_of_type
 
-from tx_nmodl.nmodl import NModlCompiler
-from tx_nmodl.lems_helpers import ComponentTypeHelper, ComponentHelper
+from pynmodl.nmodl import NModlCompiler
+from pynmodl.lems_helpers import ComponentTypeHelper, ComponentHelper
 
 
 class LemsCompTypeGenerator(NModlCompiler):

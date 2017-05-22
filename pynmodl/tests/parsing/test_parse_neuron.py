@@ -3,7 +3,7 @@ from textx.metamodel import metamodel_from_file
 from hack import metamodel_with_any_var
 
 mm = metamodel_with_any_var(
-    os.path.join(os.path.dirname(__file__), '../grammar/neuron.tx'))
+    os.path.join(os.path.dirname(__file__), '../../grammar/neuron.tx'))
 
 
 def test_neuron():

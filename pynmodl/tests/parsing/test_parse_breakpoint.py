@@ -4,7 +4,7 @@ from textx.model import children_of_type
 
 
 mm = metamodel_with_any_var(
-    os.path.join(os.path.dirname(__file__), '../grammar/breakpoint.tx'))
+    os.path.join(os.path.dirname(__file__), '../../grammar/breakpoint.tx'))
 
 
 def test_breakpoint():

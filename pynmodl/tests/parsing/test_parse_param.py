@@ -2,7 +2,7 @@ import os
 from textx.metamodel import metamodel_from_file
 
 mm = metamodel_from_file(
-    os.path.join(os.path.dirname(__file__), '../grammar/parameter.tx'))
+    os.path.join(os.path.dirname(__file__), '../../grammar/parameter.tx'))
 
 
 def test_neuron():

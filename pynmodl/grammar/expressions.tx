@@ -11,7 +11,7 @@ IfStatement: 'if' '(' cond=Expression ')'
 				true_blk=Block ('else' false_blk=Block)?;
 WhileStatement: 'while' '(' cond=Expression ')' Block;
 
-Primed: variable=cID+/'+/ '='!'='? expression=LogicalCon;
+Primed: variable=cID/'+/ '='!'='? expression=LogicalCon;
 
 Expression: Assignment;
 Assignment: (variable=VarRef '='!'=')? expression=LogicalCon;

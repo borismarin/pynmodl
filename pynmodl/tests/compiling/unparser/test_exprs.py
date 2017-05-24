@@ -31,9 +31,9 @@ def test_if():
     assert(compstmt('if(abs(-1)==1){tan(3.1415926/4)} else{log(-1)}') ==
            dedent('''\
            if(abs(-1) == 1){
-           \ttan(3.1415926 / 4)
+               tan(3.1415926 / 4)
            }else{
-           \tlog(-1)
+               log(-1)
            }'''))
 
 

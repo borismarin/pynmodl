@@ -6,17 +6,37 @@ class NModlCompiler(object):
     def __init__(self):
         curr_dir = os.path.dirname(__file__)
         self.mm = metamodel_from_file(
-            os.path.join(curr_dir, 'grammar', 'nmodl.tx'))
+            os.path.join(curr_dir, 'grammar', 'nmodl.tx'),
+            auto_init_attributes=False)
 
         self.mm.register_obj_processors({
+            'Program': self.handle_program,
+
             # NEURON
+            'Neuron': self.handle_neuron_blk,
             'Suffix': self.handle_suffix,
+            'Global': self.handle_global,
+            'Range': self.handle_range,
+            'Pointer': self.handle_pointer,
+            'External': self.handle_external,
+            'Nonspecific': self.handle_nonspecific,
+            'UseIon': self.handle_useIon,
             'Read': self.handle_read,
             'Write': self.handle_write,
+            'Valence': self.handle_valence,
+
+            # PARAMETER
+            'Parameter': self.handle_parameter_blk,
             'ParDef': self.handle_param,
+
+            # ASSIGNED
+            'Assigned': self.handle_assigned_blk,
+            'AssignedDef': self.handle_assigned,
+
+            # STATE
             'StateVariable': self.handle_state,
 
-            'Program': self.handle_program,
+            # FUNCTION - PROCEDURE
             'FuncsProcs': self.handle_funcsprocs,
 
             # expression-related
@@ -54,19 +74,53 @@ class NModlCompiler(object):
     def handle_suffix(self, node):
         pass
 
+    def handle_global(self, glob):
+        pass
+
+    def handle_range(self, range):
+        pass
+
+    def handle_pointer(self, pointer):
+        pass
+
+    def handle_external(self, external):
+        pass
+
+    def handle_nonspecific(self, nonspecific):
+        pass
+
+    def handle_useIon(self, useIon):
+        pass
+
     def handle_read(self, node):
         pass
 
     def handle_write(self, node):
         pass
 
+    def handle_valence(self, node):
+        pass
+
+    def handle_parameter_blk(self, pblk):
+        pass
+
     def handle_param(self, node):
+        pass
+
+    def handle_assigned_blk(self, pblk):
+        pass
+
+    def handle_assigned(self, node):
         pass
 
     def handle_state(self, node):
         pass
 
+    def handle_neuron_blk(self, node):
+        pass
+
     # expression-related
+
     def handle_addition(self, node):
         pass
 

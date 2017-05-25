@@ -13,7 +13,6 @@ def test_neuron():
         NONSPECIFIC_CURRENT il
         RANGE gnabar, gkbar, gl, el
         GLOBAL minf, hinf, ninf, mexp, hexp, nexp
-        GLOBAL x
     }
     PARAMETER {
         v (mV)
@@ -23,7 +22,10 @@ def test_neuron():
         ek = -77.5 (mV)
         gl = 0.0003 (mho/cm2)
         el = -54.3 (mV)
-        x
+    }
+    UNITS {
+        (mA) = (milliamp)
+        (mV) = (millivolt)
     }
     ASSIGNED {
         ina (mA/cm2)

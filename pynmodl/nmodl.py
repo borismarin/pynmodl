@@ -12,6 +12,10 @@ class NModlCompiler(object):
         self.mm.register_obj_processors({
             'Program': self.handle_program,
 
+            # UNITS
+            'Units': self.handle_units_blk,
+            'UnitDef': self.handle_unit_def,
+
             # NEURON
             'Neuron': self.handle_neuron_blk,
             'Suffix': self.handle_suffix,
@@ -64,6 +68,12 @@ class NModlCompiler(object):
             'Primed': self.handle_primed,
             'Local': self.handle_local,
         })
+
+    def handle_units_blk(self, node):
+        pass
+
+    def handle_unit_def(self, node):
+        pass
 
     def handle_funcsprocs(self, node):
         pass

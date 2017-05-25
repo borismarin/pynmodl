@@ -27,6 +27,14 @@ class Unparser(NModlCompiler):
     def handle_program(self, prog):
         prog.unparsed = '\n'.join(self.unparse_attrs(prog))
 
+    # UNITS block
+    def handle_units_blk(self, ublk):
+        ublk.unparsed = 'UNITS {}'.format(
+            blockify(ud.unparsed for ud in ublk.unit_defs))
+
+    def handle_unit_def(self, udef):
+        udef.unparsed = ' '.join((udef.name, '=', udef.base_unit))
+
     # NEURON block
     def handle_neuron_blk(self, nrn):
         sts = blockify(st.unparsed for st in nrn.statements)

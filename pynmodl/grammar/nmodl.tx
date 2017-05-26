@@ -10,6 +10,7 @@ import breakpoint
 import expressions
 import initial
 import keyword
+import table
 
 Program: (neuron=Neuron |  title=Title | state=State |
 	parameter=Parameter | units=Units | assigned=Assigned |

@@ -73,7 +73,7 @@ def test_neuron():
         PROCEDURE rates(v) {  :Computes rate and other constants at current v.
                       :Call once from HOC to initialize inf at resting v.
             LOCAL  q10, tinc, alpha, beta, sum
-            :TABLE minf, mexp, hinf, hexp, ninf, nexp DEPEND dt, celsius FROM -100 TO 100 WITH 200
+            TABLE minf, mexp, hinf, hexp, ninf, nexp DEPEND dt, celsius FROM -100 TO 100 WITH 200
             q10 = 3^((celsius - 6.3)/10)
             tinc = -dt * q10
                     :"m" sodium activation system
@@ -123,4 +123,7 @@ def test_neuron():
 
     solve = prog.breakpoint.statements[0]
     assert solve.solve.name == 'states' # this is the actual PROCEDURE
+
+    states, rates, vtrap = prog.functions_procedures.fd
+    assert(rates.b.stmts[1].tabbed[0].name == 'minf')
 

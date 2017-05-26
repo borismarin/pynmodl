@@ -2,9 +2,10 @@ import comment
 import keyword
 import variable
 import units
+import table
 
-Statement: Block | Primed | Assignment | IfStatement | 
-			WhileStatement | Locals | Expression | FuncDef | UnitsCtrl;
+Statement: Block | Primed | Assignment | IfStatement | WhileStatement |
+			Locals | Expression | FuncDef | Table | UnitsCtrl ;
 Block: '{' stmts*=Statement '}';
 
 IfStatement: 'if' '(' cond=Expression ')'

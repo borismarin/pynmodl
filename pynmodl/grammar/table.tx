@@ -1,0 +1,11 @@
+import variable
+
+Table: 'TABLE' tabbed+=[Variable][','] Depends? From To With;
+Depends: 'DEPEND' depends*=[Variable][','];
+From: 'FROM' FloatOrVar;
+To: 'TO' FloatOrVar;
+With: 'WITH' IntOrVar;
+
+FloatOrVar: FLOAT | ID;
+IntOrVar: INT | ID;
+

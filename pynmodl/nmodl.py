@@ -12,6 +12,8 @@ class NModlCompiler(object):
         self.mm.register_obj_processors({
             'Program': self.handle_program,
 
+            'Title': self.handle_title,
+
             # UNITS
             'Units': self.handle_units_blk,
             'UnitDef': self.handle_unit_def,
@@ -68,6 +70,9 @@ class NModlCompiler(object):
             'Primed': self.handle_primed,
             'Local': self.handle_local,
         })
+
+    def handle_title(self, node):
+        pass
 
     def handle_units_blk(self, node):
         pass

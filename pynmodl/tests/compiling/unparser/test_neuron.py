@@ -14,6 +14,7 @@ def test_neuron():
         RANGE gnabar, gkbar, gl, el
         GLOBAL minf, hinf, ninf, mexp, hexp, nexp
     }
+    TITLE gsquid.mod   squid sodium, potassium, and leak channels
     PARAMETER {
         v (mV)
         gnabar = 0.12 (mho/cm2)

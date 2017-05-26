@@ -40,7 +40,8 @@ class NModlCompiler(object):
             'AssignedDef': self.handle_assigned,
 
             # STATE
-            'StateVariable': self.handle_state,
+            'StateVariable': self.handle_state_variable,
+            'State': self.handle_state_blk,
 
             # FUNCTION - PROCEDURE
             'FuncsProcs': self.handle_funcsprocs,
@@ -75,6 +76,12 @@ class NModlCompiler(object):
         pass
 
     def handle_units_blk(self, node):
+        pass
+
+    def handle_state_blk(self, node):
+        pass
+
+    def handle_state_variable(self, node):
         pass
 
     def handle_unit_def(self, node):

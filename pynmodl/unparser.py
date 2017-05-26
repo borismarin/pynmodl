@@ -27,6 +27,17 @@ class Unparser(NModlCompiler):
     def handle_program(self, prog):
         prog.unparsed = '\n'.join(self.unparse_attrs(prog))
 
+    def handle_title(self, tit):
+        tit.unparsed = 'TITLE ' + tit.title
+
+    def handle_state_blk(self, st):
+        st.unparsed = 'STATE {}'.format(
+            blockify(s.unparsed for s in st.state_vars))
+
+    def handle_state_variable(self, st):
+        unit = ' ' + st.unit if st.unit else ''
+        st.unparsed = st.name + unit
+
     # UNITS block
     def handle_units_blk(self, ublk):
         ublk.unparsed = 'UNITS {}'.format(

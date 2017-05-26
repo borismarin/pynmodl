@@ -30,7 +30,7 @@ class LemsCompTypeGenerator(NModlCompiler):
         else:
             self.L.par(pname, 'none')
 
-    def handle_state(self, state):
+    def handle_state_variable(self, state):
         self.L.exp(state.name, 'none')
         self.L.state(state.name, 'none')
 

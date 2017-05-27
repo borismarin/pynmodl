@@ -16,7 +16,7 @@ def test_initial():
     }
     '''
     init = mm.model_from_str(nrn)
-    tadk, proc, m0, h0 = init.statements
+    tadk, proc, m0, h0 = init.b.stmts
     fcall = children_of_type('FuncCall', proc)[0]
     assert(fcall.func.user.name == 'trates')
     assert(children_of_type('VarRef', h0.expression)[0].var.name == 'hinf')

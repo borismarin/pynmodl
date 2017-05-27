@@ -17,6 +17,7 @@ class NModlCompiler(object):
             # UNITS
             'Units': self.handle_units_blk,
             'UnitDef': self.handle_unit_def,
+            'UnitsCtrl': self.handle_unit_ctrl,
 
             # NEURON
             'Neuron': self.handle_neuron_blk,
@@ -90,6 +91,9 @@ class NModlCompiler(object):
         pass
 
     def handle_units_blk(self, node):
+        pass
+
+    def handle_unit_ctrl(self, node):
         pass
 
     def handle_state_blk(self, node):

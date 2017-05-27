@@ -1,2 +1,2 @@
 Keyword: 'if' | 'else' | 'while' | 'FUNCTION' | 'LOCAL' | 'SOLVE' | 'TABLE' | UnitsCtrl;
-UnitsCtrl: 'UNITSON' |  'UNITSOFF';
+UnitsCtrl: units_on='UNITSON' |  units_off='UNITSOFF';

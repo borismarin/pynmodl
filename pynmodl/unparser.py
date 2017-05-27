@@ -46,6 +46,9 @@ class Unparser(NModlCompiler):
     def handle_unit_def(self, udef):
         udef.unparsed = ' '.join((udef.name, '=', udef.base_unit))
 
+    def handle_unit_ctrl(self, uc):
+        uc.unparsed = 'UNITSON' if uc.units_on else 'UNITSOFF'
+
     # NEURON block
     def handle_neuron_blk(self, nrn):
         nrn.unparsed = blockify('NEURON', nrn.statements)

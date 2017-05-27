@@ -22,6 +22,8 @@ def test_neuron():
     }
     PARAMETER {
         v (mV)
+        celsius = 6.3 (degC)
+        dt (ms)
         gnabar = 0.12 (mho/cm2)
         ena = 50 (mV)
         gkbar = 0.036 (mho/cm2)
@@ -43,5 +45,39 @@ def test_neuron():
         mexp
         hexp
         nexp
+    }
+    PROCEDURE states(){
+        rates(v)
+        m = m + mexp * (minf - m)
+        h = h + hexp * (hinf - h)
+        n = n + nexp * (ninf - n)
+    }
+    PROCEDURE rates(v){
+        LOCAL q10, tinc, alpha, beta, sum
+        TABLE minf, mexp, hinf, hexp, ninf, nexp DEPEND dt, celsius FROM -100 TO 100 WITH 200
+        q10 = 3 ^ ((celsius - 6.3) / 10)
+        tinc = -dt * q10
+        alpha = 0.1 * vtrap(-(v + 40), 10)
+        beta = 4 * exp(-(v + 65) / 18)
+        sum = alpha + beta
+        minf = alpha / sum
+        mexp = 1 - exp(tinc * sum)
+        alpha = 0.07 * exp(-(v + 65) / 20)
+        beta = 1 / (exp(-(v + 35) / 10) + 1)
+        sum = alpha + beta
+        hinf = alpha / sum
+        hexp = 1 - exp(tinc * sum)
+        alpha = 0.01 * vtrap(-(v + 55), 10)
+        beta = 0.125 * exp(-(v + 65) / 80)
+        sum = alpha + beta
+        ninf = alpha / sum
+        nexp = 1 - exp(tinc * sum)
+    }
+    FUNCTION vtrap(x, y){
+        if(fabs(x / y) < 1e-6){
+            vtrap = y * (1 - x / y / 2)
+        }else{
+            vtrap = x / (exp(x / y) - 1)
+        }
     }''')
     assert unp(src) == src

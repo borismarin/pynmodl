@@ -47,6 +47,10 @@ class NModlCompiler(object):
             'FuncsProcs': self.handle_funcsprocs,
 
             # expression-related
+            'Table': self.handle_table,
+            'From': self.handle_from,
+            'To': self.handle_to,
+            'With': self.handle_with,
             'Addition': self.handle_addition,
             'Multiplication': self.handle_multiplication,
             'Exponentiation': self.handle_exponentiation,
@@ -135,13 +139,22 @@ class NModlCompiler(object):
     def handle_assigned(self, node):
         pass
 
-    def handle_state(self, node):
-        pass
-
     def handle_neuron_blk(self, node):
         pass
 
     # expression-related
+    #
+    def handle_table(self, node):
+        pass
+
+    def handle_from(self, node):
+        pass
+
+    def handle_to(self, node):
+        pass
+
+    def handle_with(self, node):
+        pass
 
     def handle_addition(self, node):
         pass

@@ -186,10 +186,11 @@ class Unparser(NModlCompiler):
     def handle_funcdef(self, f):
         stmts = f.b.unparsed
         args = ', '.join([p.unparsed for p in f.pars])
-        f.unparsed = 'FUNCTION {}({}){}'.format(f.name, args, stmts)
+        f_or_p = 'FUNCTION' if f.is_function else 'PROCEDURE'
+        f.unparsed = '{} {}({}){}'.format(f_or_p, f.name, args, stmts)
 
     def handle_locals(self, loc):
-        locs = ', '.join([l.unparsed for l in loc.vars])
+        locs = self.unparse_list(loc.vars)
         loc.unparsed = 'LOCAL {}'.format(locs)
 
     def handle_local(self, loc):
@@ -209,6 +210,23 @@ class Unparser(NModlCompiler):
 
     def handle_relop(self, r):
         self.op(r)
+
+    def handle_table(self, table):
+        unp = 'TABLE ' + self.unparse_list(table.tabbed)
+        if table.depend:
+            unp += ' DEPEND ' + self.unparse_list(table.depend.deps)
+        table.unparsed = ' '.join((unp, table.f.unparsed,
+                                   table.t.unparsed,
+                                   table.w.unparsed))
+
+    def handle_to(self, to):
+        to.unparsed = 'TO ' + '{:g}'.format(to.val)
+
+    def handle_from(self, fro):
+        fro.unparsed = 'FROM ' + '{:g}'.format(fro.val)
+
+    def handle_with(self, wit):
+        wit.unparsed = 'WITH ' + str(wit.val)
 
     def handle_primed(self, p):
         var = p.variable

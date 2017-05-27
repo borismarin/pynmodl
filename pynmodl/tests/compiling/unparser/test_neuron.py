@@ -46,17 +46,17 @@ def test_neuron():
         hexp
         nexp
     }
+    DERIVATIVE states {
+        rates(v)
+        m = m + mexp * (minf - m)
+        h = h + hexp * (hinf - h)
+        n = n + nexp * (ninf - n)
+    }
     BREAKPOINT {
         SOLVE states METHOD sparse
         ina = gnabar * m * m * m * h * (v - ena)
         ik = gkbar * n * n * n * n * (v - ek)
         il = gl * (v - el)
-    }
-    PROCEDURE states(){
-        rates(v)
-        m = m + mexp * (minf - m)
-        h = h + hexp * (hinf - h)
-        n = n + nexp * (ninf - n)
     }
     PROCEDURE rates(v){
         LOCAL q10, tinc, alpha, beta, sum
@@ -85,5 +85,11 @@ def test_neuron():
         }else{
             vtrap = x / (exp(x / y) - 1)
         }
+    }
+    INITIAL {
+        rates(v)
+        m = minf
+        h = hinf
+        n = ninf
     }''')
     assert unp(src) == src

@@ -2,5 +2,5 @@ import comment
 import variable
 import expressions
 
-Initial: 'INITIAL' '{' statements*=Statement '}';
+Initial: 'INITIAL' b=Block;
 

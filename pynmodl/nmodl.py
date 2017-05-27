@@ -47,6 +47,12 @@ class NModlCompiler(object):
             'Breakpoint': self.handle_breakpoint_blk,
             'Solve': self.handle_solve,
 
+            # INITIAL
+            'Initial': self.handle_initial_blk,
+
+            # DERIVATIVE
+            'Derivative': self.handle_derivative_blk,
+
             # FUNCTION - PROCEDURE
             'FuncsProcs': self.handle_funcsprocs,
 
@@ -233,4 +239,10 @@ class NModlCompiler(object):
         pass
 
     def handle_local(self, node):
+        pass
+
+    def handle_derivative_blk(self, node):
+        pass
+
+    def handle_initial_blk(self, node):
         pass

@@ -116,6 +116,15 @@ class Unparser(NModlCompiler):
         unit = ad.unit if ad.unit else ''
         ad.unparsed = ' '.join((ad.name, unit)).rstrip()
 
+    # BREAKPOINT BLOCK
+    def handle_breakpoint_blk(self, bp):
+        bp.unparsed = 'BREAKPOINT {}'.format(
+            blockify(s.unparsed for s in bp.statements))
+
+    def handle_solve(self, solve):
+        meth = ' METHOD ' + solve.method if solve.method else ''
+        solve.unparsed = 'SOLVE ' + solve.solve.name + meth
+
     # Expressions
     def binop(self, node):
         ops = [n.unparsed for n in node.op[1:]]

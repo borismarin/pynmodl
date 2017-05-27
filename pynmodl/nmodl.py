@@ -43,6 +43,10 @@ class NModlCompiler(object):
             'StateVariable': self.handle_state_variable,
             'State': self.handle_state_blk,
 
+            # BREAKPOINT
+            'Breakpoint': self.handle_breakpoint_blk,
+            'Solve': self.handle_solve,
+
             # FUNCTION - PROCEDURE
             'FuncsProcs': self.handle_funcsprocs,
 
@@ -140,6 +144,12 @@ class NModlCompiler(object):
         pass
 
     def handle_neuron_blk(self, node):
+        pass
+
+    def handle_breakpoint_blk(self, node):
+        pass
+
+    def handle_solve(self, node):
         pass
 
     # expression-related

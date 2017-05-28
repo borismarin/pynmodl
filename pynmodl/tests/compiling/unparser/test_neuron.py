@@ -6,6 +6,11 @@ unp = Unparser().compile
 
 def test_neuron():
     src = dedent('''\
+    TITLE gsquid.mod   squid sodium, potassium, and leak channels
+    UNITS {
+        (mA) = (milliamp)
+        (mV) = (millivolt)
+    }
     NEURON {
         SUFFIX hh1
         USEION na READ ena WRITE ina
@@ -13,12 +18,6 @@ def test_neuron():
         NONSPECIFIC_CURRENT il
         RANGE gnabar, gkbar, gl, el
         GLOBAL minf, hinf, ninf, mexp, hexp, nexp
-    }
-    TITLE gsquid.mod   squid sodium, potassium, and leak channels
-    STATE {
-        m
-        h
-        n
     }
     PARAMETER {
         v (mV)
@@ -31,10 +30,6 @@ def test_neuron():
         gl = 0.0003 (mho/cm2)
         el = -54.3 (mV)
     }
-    UNITS {
-        (mA) = (milliamp)
-        (mV) = (millivolt)
-    }
     ASSIGNED {
         ina (mA/cm2)
         ik (mA/cm2)
@@ -46,17 +41,28 @@ def test_neuron():
         hexp
         nexp
     }
-    DERIVATIVE states {
+    STATE {
+        m
+        h
+        n
+    }
+    INITIAL {
         rates(v)
-        m = m + mexp * (minf - m)
-        h = h + hexp * (hinf - h)
-        n = n + nexp * (ninf - n)
+        m = minf
+        h = hinf
+        n = ninf
     }
     BREAKPOINT {
         SOLVE states METHOD sparse
         ina = gnabar * m * m * m * h * (v - ena)
         ik = gkbar * n * n * n * n * (v - ek)
         il = gl * (v - el)
+    }
+    DERIVATIVE states {
+        rates(v)
+        m = m + mexp * (minf - m)
+        h = h + hexp * (hinf - h)
+        n = n + nexp * (ninf - n)
     }
     PROCEDURE rates(v){
         LOCAL q10, tinc, alpha, beta, sum
@@ -85,11 +91,5 @@ def test_neuron():
         }else{
             vtrap = x / (exp(x / y) - 1)
         }
-    }
-    INITIAL {
-        rates(v)
-        m = minf
-        h = hinf
-        n = ninf
     }''')
     assert unp(src) == src

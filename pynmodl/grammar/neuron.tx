@@ -2,7 +2,8 @@ import comment
 import variable
 
 Neuron: 'NEURON' '{' statements*=NRNStat '}';
-NRNStat: Suffix | Global | Range | Pointer | External | Nonspecific | UseIon;
+NRNStat: Suffix | Global | Range | Pointer |
+		 External | Nonspecific | UseIon | 'THREADSAFE';
 Suffix: 'SUFFIX' suffix=ID;
 Global: 'GLOBAL' globals+=[Variable][','];
 Range: 'RANGE' ranges+=[Variable][','];

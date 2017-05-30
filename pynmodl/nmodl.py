@@ -108,8 +108,19 @@ class NModlCompiler(object):
     def handle_funcsprocs(self, node):
         pass
 
-    def handle_program(self, node):
-        pass
+    def handle_program(self, prog):
+        def blocks_of_type(blocks, typename):
+            return [b for b in blocks if type(b).__name__ == typename]
+
+        for b in ('Title', 'Units', 'Neuron', 'Parameter', 'Assigned',
+                  'State', 'Initial', 'Breakpoint', 'Derivative'):
+            blks = blocks_of_type(prog.blocks, b)
+            if len(blks) > 1:
+                print('Validation error:', 'multiple {} blocks'
+                      .format(b.capitalize))
+                exit(1)
+            else:
+                setattr(prog, b.lower(), blks)
 
     def handle_suffix(self, node):
         pass

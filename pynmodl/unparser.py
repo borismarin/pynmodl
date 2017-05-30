@@ -13,10 +13,6 @@ def blockify(block_name, stmts):
 
 
 class Unparser(NModlCompiler):
-    def unparse_attrs(self, node):
-        return [getattr(node, at).unparsed
-                for at in node._tx_attrs
-                if getattr(node, at)]
 
     def unparse_list(self, leest):
         def deref(ref):
@@ -27,7 +23,8 @@ class Unparser(NModlCompiler):
         return ', '.join(deref(el) for el in leest)
 
     def handle_program(self, prog):
-        prog.unparsed = '\n'.join(self.unparse_attrs(prog))
+        super().handle_program(prog)
+        prog.unparsed = '\n'.join(b.unparsed for b in prog.blocks)
 
     def handle_title(self, tit):
         tit.unparsed = 'TITLE ' + tit.title

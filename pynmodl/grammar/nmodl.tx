@@ -12,17 +12,17 @@ import initial
 import keyword
 import table
 
-Program: (
-	title=Title |
-	units=Units |
-	neuron=Neuron |
-	parameter=Parameter |
-	assigned=Assigned |
-	state=State |
-	initial=Initial |
-	breakpoint=Breakpoint |
-	derivative=Derivative |
-	functions_procedures=FuncsProcs |
-	UnitsCtrl
-	)*;
-FuncsProcs: fd*=FuncDef;
+Program: blocks*=NModlBlock;
+
+NModlBlock: Title
+			| Units
+			| Neuron
+			| Parameter
+			| Assigned
+			| State
+			| Initial
+			| Breakpoint
+			| Derivative
+			| FuncDef
+			| UnitsCtrl;
+

@@ -104,26 +104,27 @@ def test_neuron():
             }
         }
         """
-    prog = mm.model_from_str(p)
+    blocks = mm.model_from_str(p).blocks
+    title, units, neuron, parameter, state, assigned, breakpoint = blocks[:7]
 
-    s, g, ui_k, ui_na, r, n = prog.neuron.statements
-    assert([gg.name for gg in g.globals] == ['minf', 'hinf', 'ninf', 'mexp', 'hexp', 'nexp'])
+    s, g, ui_k, ui_na, r, n = neuron.statements
+    assert([gg.name for gg in g.globals] ==
+           ['minf', 'hinf', 'ninf', 'mexp', 'hexp', 'nexp'])
     assert(s.suffix == 'hh1')
     assert([r.name for r in ui_k.r.reads] == ['ek'])
     assert([w.name for w in ui_na.w.writes] == ['ina'])
     assert(ui_k.v.valence == 1)
 
-    assert([sv.name for sv in prog.state.state_vars] == ['m', 'h', 'n'])
+    assert([sv.name for sv in state.state_vars] == ['m', 'h', 'n'])
 
-    assert(prog.units.unit_defs[0].base_unit == '(millivolt)')
+    assert(units.unit_defs[0].base_unit == '(millivolt)')
 
-    p0 = prog.parameter.parameters[0]
+    p0 = parameter.parameters[0]
     assert(p0.name == 'v')
     assert(p0.unit == '(mV)')
 
-    solve = prog.breakpoint.statements[0]
-    assert solve.solve.name == 'states' # this is the actual PROCEDURE
+    solve = breakpoint.statements[0]
+    assert solve.solve.name == 'states'  # this is the actual PROCEDURE
 
-    states, rates, vtrap = prog.functions_procedures.fd
+    states, rates, vtrap = blocks[-3:]
     assert(rates.b.stmts[1].tabbed[0].name == 'minf')
-

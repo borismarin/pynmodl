@@ -12,6 +12,7 @@ class LemsCompTypeGenerator(NModlCompiler):
         super().__init__()
         self.L = ComponentTypeHelper()
         self.mm.register_model_processor(self.add_block_bodies)
+        self.mm.register_model_processor(self.add_derivatives)
 
     def handle_suffix(self, suf):
         self.L.comp_type.attrib['id'] = suf.suffix + '_lems'
@@ -42,10 +43,10 @@ class LemsCompTypeGenerator(NModlCompiler):
             asgn.lems = exp.lems
         asgn.visited = False
 
-    def handle_primed(self, p):
-        var = p.variable
-        expression = p.expression
-        self.L.dxdt(var, expression.lems)
+    # def handle_primed(self, p):
+    #     var = p.variable
+    #     expression = p.expression
+    #     self.L.dxdt(var, expression.lems)
 
     def mangle_name(self, root, pars, suff=None):
         par_ph = ['{' + p.name + '}' for p in pars]
@@ -146,6 +147,10 @@ class LemsCompTypeGenerator(NModlCompiler):
         def inner_asgns(x):
             return (a for a in children_of_type('Assignment', x)
                     if a.variable)
+        for asgn in inner_asgns(root):
+            if not parent_of_type('IfStatement', asgn) :
+                self.L.dv(asgn.variable.lems.format(**context),
+                          asgn.expression.lems.format(**context))
         for ifst in children_of_type('IfStatement', root):
             # handling true/false assignments for the same var
             for t, f in zip(inner_asgns(ifst.true_blk),
@@ -155,24 +160,24 @@ class LemsCompTypeGenerator(NModlCompiler):
                                ifst.cond.lems.format(**context),
                                t.expression.lems.format(**context),
                                f.expression.lems.format(**context))
-                    t.visited = True
-                    f.visited = True
             # TODO: multiple assignement to same var [x=y if(x<z){x=w}]
-        for asgn in inner_asgns(root):
-            if not asgn.visited:
-                self.L.dv(asgn.variable.lems.format(**context),
-                          asgn.expression.lems.format(**context))
 
     def add_block_bodies(self, model, metamodel):
         # append function body for every function call
         for fc in children_of_type('FuncCall', model):
-            args = [a.lems for a in fc.args]
             if fc.func.user:
+                args = [a.lems for a in fc.args]
                 fun = fc.func.user
                 arg_val = dict(zip([p.name for p in fun.pars], args))
                 if args not in fun.visited_with_args:
                     self.process_block(fun, arg_val)
                     fun.visited_with_args.append(args)
+
+    def add_derivatives(self, model, metamodel):
+        for p in children_of_type('Primed', model):
+            var = p.variable
+            expression = p.expression
+            self.L.dxdt(var, expression.lems)
 
     def compile(self, model_str):
         self.mm.model_from_str(model_str)

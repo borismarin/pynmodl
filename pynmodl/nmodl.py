@@ -118,11 +118,13 @@ class NModlCompiler(object):
                   'State', 'Initial', 'Breakpoint', 'Derivative'):
             blks = blocks_of_type(prog.blocks, b)
             if len(blks) > 1:
+                # TODO: proper validation 
                 print('Validation error:', 'multiple {} blocks'
                       .format(b.capitalize))
                 exit(1)
             else:
-                setattr(prog, b.lower(), blks)
+                if blks:
+                    setattr(prog, b.lower(), blks[0])
 
     def handle_suffix(self, node):
         pass

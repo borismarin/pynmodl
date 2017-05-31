@@ -6,10 +6,8 @@ def ind(x):
     return indent(x, '    ')
 
 
-def blockify(block_name, stmts):
-    name = block_name + ' ' if block_name else ''
-    blk = '\n'.join(['{', ind('\n'.join(s.unparsed for s in stmts)), '}'])
-    return name + blk
+def blockify(stmts):
+    return '\n'.join(['{', ind('\n'.join(s.unparsed for s in stmts)), '}'])
 
 
 class Unparser(NModlCompiler):
@@ -30,7 +28,7 @@ class Unparser(NModlCompiler):
         tit.unparsed = 'TITLE ' + tit.title
 
     def handle_state_blk(self, st):
-        st.unparsed = blockify('STATE', st.state_vars)
+        st.unparsed = 'STATE ' + blockify(st.state_vars)
 
     def handle_state_variable(self, st):
         unit = ' ' + st.unit if st.unit else ''
@@ -38,7 +36,7 @@ class Unparser(NModlCompiler):
 
     # UNITS block
     def handle_units_blk(self, ublk):
-        ublk.unparsed = blockify('UNITS', ublk.unit_defs)
+        ublk.unparsed = 'UNITS ' + blockify(ublk.unit_defs)
 
     def handle_unit_def(self, udef):
         udef.unparsed = ' '.join((udef.name, '=', udef.base_unit))
@@ -48,7 +46,7 @@ class Unparser(NModlCompiler):
 
     # NEURON block
     def handle_neuron_blk(self, nrn):
-        nrn.unparsed = blockify('NEURON', nrn.statements)
+        nrn.unparsed = 'NEURON ' + blockify(nrn.statements)
 
     def handle_suffix(self, suff):
         suff.unparsed = 'SUFFIX ' + suff.suffix
@@ -94,7 +92,7 @@ class Unparser(NModlCompiler):
 
     # PARAMETER block
     def handle_parameter_blk(self, pblk):
-        pblk.unparsed = blockify('PARAMETER', pblk.parameters)
+        pblk.unparsed = 'PARAMETER ' + blockify(pblk.parameters)
 
     def handle_param(self, pd):
         pd.unparsed = pd.name
@@ -107,7 +105,7 @@ class Unparser(NModlCompiler):
 
     # ASSIGNED block
     def handle_assigned_blk(self, ablk):
-        ablk.unparsed = blockify('ASSIGNED', ablk.assigneds)
+        ablk.unparsed = 'ASSIGNED ' + blockify(ablk.assigneds)
 
     def handle_assigned(self, ad):
         unit = ad.unit if ad.unit else ''
@@ -115,20 +113,20 @@ class Unparser(NModlCompiler):
 
     # BREAKPOINT BLOCK
     def handle_breakpoint_blk(self, bp):
-        bp.unparsed = blockify('BREAKPOINT', bp.statements)
+        bp.unparsed = 'BREAKPOINT ' + blockify(bp.statements)
 
     def handle_solve(self, solve):
         meth = ' METHOD ' + solve.method if solve.method else ''
         solve.unparsed = 'SOLVE ' + solve.solve.name + meth
 
-    # INITIAL
-    def handle_derivative_blk(self, deriv):
-        name = 'DERIVATIVE ' + deriv.name
-        deriv.unparsed = blockify(name, deriv.b.stmts)
-
     # DERIVATIVE
+    def handle_derivative_blk(self, deriv):
+        head = ' '.join(('DERIVATIVE', deriv.name, ''))
+        deriv.unparsed = head + blockify(deriv.b.stmts)
+
+    # INITIAL
     def handle_initial_blk(self, init):
-        init.unparsed = blockify('INITIAL', init.b.stmts)
+        init.unparsed = 'INITIAL ' + blockify(init.b.stmts)
 
     # Expressions
     def binop(self, node):
@@ -195,7 +193,7 @@ class Unparser(NModlCompiler):
         ifs.unparsed = 'if({}){}{}'.format(cond, ift, iff)
 
     def handle_block(self, b):
-        b.unparsed = blockify('', b.stmts)
+        b.unparsed = blockify(b.stmts)
 
     def handle_funcdef(self, f):
         stmts = f.b.unparsed

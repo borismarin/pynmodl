@@ -13,7 +13,7 @@ class LemsCompTypeGenerator(NModlCompiler):
         self.L = ComponentTypeHelper()
 
     def handle_suffix(self, suf):
-        self.L.comp_type.attrib['id'] = suf.suffix
+        self.L.comp_type.attrib['id'] = suf.suffix + '_lems'
 
     def handle_read(self, read):
         for r in read.reads:

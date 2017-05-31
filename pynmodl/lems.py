@@ -11,6 +11,7 @@ class LemsCompTypeGenerator(NModlCompiler):
     def __init__(self):
         super().__init__()
         self.L = ComponentTypeHelper()
+        self.mm.register_model_processor(self.add_block_bodies)
 
     def handle_suffix(self, suf):
         self.L.comp_type.attrib['id'] = suf.suffix + '_lems'
@@ -33,11 +34,6 @@ class LemsCompTypeGenerator(NModlCompiler):
     def handle_state_variable(self, state):
         self.L.exp(state.name, 'none')
         self.L.state(state.name, 'none')
-
-    def handle_block(self, b):
-        if not (parent_of_type('FuncDef', b) or
-                children_of_type('FuncCall', b)):
-            self.process_block(b)
 
     def handle_assign(self, asgn):
         var = asgn.variable
@@ -69,28 +65,6 @@ class LemsCompTypeGenerator(NModlCompiler):
             lems = ivar.name
         var.lems = lems
 
-    def process_block(self, root, context={}):
-        # TODO: consider moving convoluted traversal to _model_ processor
-        def inner_asgns(x):
-            return (a for a in children_of_type('Assignment', x)
-                    if a.variable)
-        for ifst in children_of_type('IfStatement', root):
-            # handling true/false assignments for the same var
-            for t, f in zip(inner_asgns(ifst.true_blk),
-                            inner_asgns(ifst.false_blk)):
-                if t.variable.var == f.variable.var:
-                    self.L.cdv(t.variable.lems.format(**context),
-                               ifst.cond.lems.format(**context),
-                               t.expression.lems.format(**context),
-                               f.expression.lems.format(**context))
-                    t.visited = True
-                    f.visited = True
-            # TODO: multiple assignement to same var [x=y if(x<z){x=w}]
-        for asgn in inner_asgns(root):
-            if not asgn.visited:
-                self.L.dv(asgn.variable.lems.format(**context),
-                          asgn.expression.lems.format(**context))
-
     #  function def related methods
 
     def handle_funcdef(self, f):
@@ -105,29 +79,6 @@ class LemsCompTypeGenerator(NModlCompiler):
     def handle_funcpar(self, fp):
         fp.lems = fp.name
 
-    def visit_down(self, model_obj):
-        MULT_ONE = '1'
-        PRIMITIVE_PYTHON_TYPES = [int, float, str, bool]
-
-        if type(model_obj) in PRIMITIVE_PYTHON_TYPES:
-            metaclass = type(model_obj)
-        else:
-            metaclass = self.mm[model_obj.__class__.__name__]
-            for metaattr in metaclass._tx_attrs.values():
-                # If attribute is containment reference go down
-                if metaattr.ref and metaattr.cont:
-                    attr = getattr(model_obj, metaattr.name)
-                    if attr:
-                        if metaattr.mult != MULT_ONE:
-                            for obj in attr:
-                                if obj:
-                                    self.visit_down(obj)
-                        else:
-                            self.visit_down(attr)
-        obj_processor = self.mm.obj_processors.get(metaclass.__name__, None)
-        if obj_processor:
-            obj_processor(model_obj)
-
     def handle_funccall(self, fc):
         args = [a.lems for a in fc.args]
         if fc.func.builtin:
@@ -135,17 +86,10 @@ class LemsCompTypeGenerator(NModlCompiler):
             lems = '{}({})'.format(fun, ', '.join(args))
         else:
             fun = fc.func.user
-            if not getattr(fun, 'visited', False):  # handle posterior decl
-                self.visit_down(fun)
-                fun.visited = True
-            arg_val = dict(zip([p.name for p in fun.pars], args))
             if fun.is_function:
                 lems = '{}_{}'.format(fun.name, '_'.join(args))
             elif fun.is_procedure:
-                lems = ''  # only interested in side effects handled below
-            if args not in fun.visited_with_args:
-                self.process_block(fun, arg_val)
-                fun.visited_with_args.append(args)
+                lems = ''
         fc.lems = lems
 
     # methods below pertain to nodes handled by direct string generation
@@ -197,6 +141,38 @@ class LemsCompTypeGenerator(NModlCompiler):
 
     def handle_relop(self, r):
         self.op(r)
+
+    def process_block(self, root, context={}):
+        def inner_asgns(x):
+            return (a for a in children_of_type('Assignment', x)
+                    if a.variable)
+        for ifst in children_of_type('IfStatement', root):
+            # handling true/false assignments for the same var
+            for t, f in zip(inner_asgns(ifst.true_blk),
+                            inner_asgns(ifst.false_blk)):
+                if t.variable.var == f.variable.var:
+                    self.L.cdv(t.variable.lems.format(**context),
+                               ifst.cond.lems.format(**context),
+                               t.expression.lems.format(**context),
+                               f.expression.lems.format(**context))
+                    t.visited = True
+                    f.visited = True
+            # TODO: multiple assignement to same var [x=y if(x<z){x=w}]
+        for asgn in inner_asgns(root):
+            if not asgn.visited:
+                self.L.dv(asgn.variable.lems.format(**context),
+                          asgn.expression.lems.format(**context))
+
+    def add_block_bodies(self, model, metamodel):
+        # append function body for every function call
+        for fc in children_of_type('FuncCall', model):
+            args = [a.lems for a in fc.args]
+            if fc.func.user:
+                fun = fc.func.user
+                arg_val = dict(zip([p.name for p in fun.pars], args))
+                if args not in fun.visited_with_args:
+                    self.process_block(fun, arg_val)
+                    fun.visited_with_args.append(args)
 
     def compile(self, model_str):
         self.mm.model_from_str(model_str)

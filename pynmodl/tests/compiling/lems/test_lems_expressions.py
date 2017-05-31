@@ -42,7 +42,7 @@ def test_blocks():
                <Case value="1 * 4"/>
              </ConditionalDerivedVariable>
              <DerivedVariable name="f_4" value="2 * f_4__b"/>
-             <TimeDerivative value="log(2) + f_v + f_4" variable="x"/>
+             <TimeDerivative value="log(2) + f_v + f_4 - f_4" variable="x"/>
           </Dynamics>
         </ComponentType>
     '''
@@ -62,10 +62,50 @@ def test_blocks():
             }
             f = 2 * b
         }
-        DERIVATIVE dx {x' = log(2) + f(v) + f(4) }
+        DERIVATIVE dx {x' = log(2) + f(v) + f(4) - f(4) }
     ''')
     assert(xml_compare(mod, lems))
 
+def test_double_funccall():
+    lems = '''
+        <ComponentType>
+          <Exposure name="x" dimension="none"/>
+          <Requirement name="v" dimension="none"/>
+          <Dynamics>
+             <StateVariable name="x" dimension="none"/>
+             <ConditionalDerivedVariable name="f_v__b">
+               <Case condition="v .neq. 0" value="v"/>
+               <Case value="1 * v"/>
+             </ConditionalDerivedVariable>
+             <DerivedVariable name="f_v" value="2 * f_v__b"/>
+             <ConditionalDerivedVariable name="f_4__b">
+               <Case condition="4 .neq. 0" value="4"/>
+               <Case value="1 * 4"/>
+             </ConditionalDerivedVariable>
+             <DerivedVariable name="f_4" value="2 * f_4__b"/>
+             <TimeDerivative value="f_v + f_v - f_4" variable="x"/>
+          </Dynamics>
+        </ComponentType>
+    '''
+    # TODO: test expr in func arguments
+
+    mod = LemsCompTypeGenerator().compile_to_string('''
+        PARAMETER {
+            v(mV)
+        }
+        STATE { x }
+        FUNCTION f(a){
+            LOCAL b
+            if(a!=0){
+                b=a
+            } else{
+                b=1*a
+            }
+            f = 2 * b
+        }
+        DERIVATIVE dx {x' = f(v) + f(v) - f(4)}
+    ''')
+    assert(xml_compare(mod, lems))
 
 def test_if():
     lems = '''

@@ -232,10 +232,12 @@ class Unparser(NModlCompiler):
                                    table.w.unparsed))
 
     def handle_to(self, to):
-        to.unparsed = 'TO ' + '{:g}'.format(to.val)
+        fmt = '{}' if isinstance(to.val, str) else '{:g}'
+        to.unparsed = 'TO ' + fmt.format(to.val)
 
     def handle_from(self, fro):
-        fro.unparsed = 'FROM ' + '{:g}'.format(fro.val)
+        fmt = '{}' if isinstance(fro.val, str) else '{:g}'
+        fro.unparsed = 'FROM ' + fmt.format(fro.val)
 
     def handle_with(self, wit):
         wit.unparsed = 'WITH ' + str(wit.val)
@@ -244,6 +246,9 @@ class Unparser(NModlCompiler):
         var = p.variable
         expression = p.expression.unparsed
         p.unparsed = "{}' = {}".format(var, expression)
+
+    def handle_threadsafe(self, t):
+        t.unparsed = 'THREADSAFE'
 
     def compile(self, mod):
         m = self.mm.model_from_str(mod)

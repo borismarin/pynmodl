@@ -85,6 +85,8 @@ class NModlCompiler(object):
             'FuncPar': self.handle_funcpar,
             'Primed': self.handle_primed,
             'Local': self.handle_local,
+
+            'Threadsafe': self.handle_threadsafe
         })
 
     def handle_title(self, node):
@@ -260,4 +262,7 @@ class NModlCompiler(object):
         pass
 
     def handle_initial_blk(self, node):
+        pass
+
+    def handle_threadsafe(self, node):
         pass

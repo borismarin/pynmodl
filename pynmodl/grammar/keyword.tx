@@ -1,3 +1,4 @@
 Keyword: 'if' | 'else' | 'while' | 'FUNCTION' | 'LOCAL' |
-		 'SOLVE' | 'TABLE' | 'THREADSAFE' |  UnitsCtrl;
+		 'SOLVE' | 'TABLE' | Threadsafe |  UnitsCtrl;
 UnitsCtrl: units_on='UNITSON' |  units_off='UNITSOFF';
+Threadsafe: t='THREADSAFE';

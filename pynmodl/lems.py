@@ -43,11 +43,6 @@ class LemsCompTypeGenerator(NModlCompiler):
             asgn.lems = exp.lems
         asgn.visited = False
 
-    # def handle_primed(self, p):
-    #     var = p.variable
-    #     expression = p.expression
-    #     self.L.dxdt(var, expression.lems)
-
     def mangle_name(self, root, pars, suff=None):
         par_ph = ['{' + p.name + '}' for p in pars]
         s = '__{}'.format(suff) if suff else ''
@@ -143,24 +138,41 @@ class LemsCompTypeGenerator(NModlCompiler):
     def handle_relop(self, r):
         self.op(r)
 
+    # _Model_ processors (all above are node listeners)
+
     def process_block(self, root, context={}):
+        import functools
+
+        def asgn_var(asgn):
+            return functools.reduce(getattr, [asgn, 'variable', 'var'])
+
         def inner_asgns(x):
             return (a for a in children_of_type('Assignment', x)
                     if a.variable)
-        for asgn in inner_asgns(root):
-            if not parent_of_type('IfStatement', asgn) :
+
+        # handle if blocks separately (cond deriv vars)
+        nonif_asgns = (a for a in inner_asgns(root)
+                       if not parent_of_type('IfStatement', a))
+        for asgn in nonif_asgns:
+            self.L.dv(asgn.variable.lems.format(**context),
+                      asgn.expression.lems.format(**context))
+
+        # paired if/else assignements
+        for ifst in children_of_type('IfStatement', root):
+            ift_asgns = {asgn_var(a): a for a in inner_asgns(ifst.true_blk)}
+            iff_asgns = {asgn_var(a): a for a in inner_asgns(ifst.false_blk)}
+            for var in ift_asgns.keys() ^ iff_asgns.keys():
+                asgn = ift_asgns.get(var,  iff_asgns.get(var))
                 self.L.dv(asgn.variable.lems.format(**context),
                           asgn.expression.lems.format(**context))
-        for ifst in children_of_type('IfStatement', root):
-            # handling true/false assignments for the same var
-            for t, f in zip(inner_asgns(ifst.true_blk),
-                            inner_asgns(ifst.false_blk)):
-                if t.variable.var == f.variable.var:
-                    self.L.cdv(t.variable.lems.format(**context),
-                               ifst.cond.lems.format(**context),
-                               t.expression.lems.format(**context),
-                               f.expression.lems.format(**context))
-            # TODO: multiple assignement to same var [x=y if(x<z){x=w}]
+            for var in ift_asgns.keys() & iff_asgns.keys():
+                tasgn = ift_asgns[var]
+                fasgn = iff_asgns[var]
+                self.L.cdv(tasgn.variable.lems.format(**context),
+                           ifst.cond.lems.format(**context),
+                           tasgn.expression.lems.format(**context),
+                           fasgn.expression.lems.format(**context))
+            # TODO: multiple assignment to same var [x=y if(x<z){x=w}]
 
     def add_block_bodies(self, model, metamodel):
         # append function body for every function call
@@ -178,6 +190,9 @@ class LemsCompTypeGenerator(NModlCompiler):
             var = p.variable
             expression = p.expression
             self.L.dxdt(var, expression.lems)
+
+
+    # Utility methods
 
     def compile(self, model_str):
         self.mm.model_from_str(model_str)

@@ -1,5 +1,6 @@
 from pynmodl.lems import LemsCompTypeGenerator
 from xmlcomp import xml_compare
+import pytest
 
 
 def test_dx_func():
@@ -213,6 +214,45 @@ def test_if_inner_asgn():
         }else{
                w = 0.1/(1-0.5*x)
                alpha= w
+        }
+    }
+    DERIVATIVE dn { n' = alpha(v)}
+    """)
+    assert(xml_compare(mod, lems))
+
+#@pytest.mark.skip(reason="IN PROGRESS!")
+def test_nested_funcs():
+    lems = '''
+    <ComponentType>
+      <Exposure name="n" dimension="none"/>
+      <Requirement name="v" dimension="none"/>
+      <Dynamics>
+        <StateVariable name="n" dimension="none"/>
+        <DerivedVariable name="alpha_v__x" value="(v + 55) / 10"/>
+        <ConditionalDerivedVariable name="alpha_v">
+          <Case condition="fabs(alpha_v__x) .gt. 1e-6"
+                value="0.1*x/(1-exp(-x))"/>
+          <Case value="0.1/(1-0.5*x)"/>
+        </ConditionalDerivedVariable>
+        <TimeDerivative variable="n" value="alpha_v"/>
+      </Dynamics>
+    </ComponentType>'''
+
+    mod = LemsCompTypeGenerator().compile_to_string("""
+    PARAMETER {
+        v (mV)
+    }
+    STATE { n }
+    FUNCTION alpha(Vm)(/ms){
+        LOCAL x
+        x = (Vm + 55) / 10
+        alpha = ahpla(x)
+    }
+    FUNCTION ahpla(x){
+        if(fabs(x) > 1e-6){
+               ahpla=0.1*x/(1-exp(-x))
+        }else{
+               ahpla=0.1/(1-0.5*x)
         }
     }
     DERIVATIVE dn { n' = alpha(v)}

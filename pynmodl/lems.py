@@ -77,6 +77,7 @@ class LemsCompTypeGenerator(NModlCompiler):
 
     def handle_funccall(self, fc):
         args = [a.lems for a in fc.args]
+        #import pdb; pdb.set_trace()
         if fc.func.builtin:
             fun = fc.func.builtin
             lems = '{}({})'.format(fun, ', '.join(args))
@@ -150,22 +151,23 @@ class LemsCompTypeGenerator(NModlCompiler):
             return (a for a in children_of_type('Assignment', x)
                     if a.variable)
 
-        # handle if blocks separately (cond deriv vars)
         nonif_asgns = (a for a in inner_asgns(root)
                        if not parent_of_type('IfStatement', a))
+        # handle if blocks separately due to Conditional Derived Variables
         for asgn in nonif_asgns:
             self.L.dv(asgn.variable.lems.format(**context),
                       asgn.expression.lems.format(**context))
 
-        # paired if/else assignements
         for ifst in children_of_type('IfStatement', root):
             ift_asgns = {asgn_var(a): a for a in inner_asgns(ifst.true_blk)}
             iff_asgns = {asgn_var(a): a for a in inner_asgns(ifst.false_blk)}
             for var in ift_asgns.keys() ^ iff_asgns.keys():
+                # unpaired assignements on either if or else block
                 asgn = ift_asgns.get(var,  iff_asgns.get(var))
                 self.L.dv(asgn.variable.lems.format(**context),
                           asgn.expression.lems.format(**context))
             for var in ift_asgns.keys() & iff_asgns.keys():
+                # paired if/else assignements
                 tasgn = ift_asgns[var]
                 fasgn = iff_asgns[var]
                 self.L.cdv(tasgn.variable.lems.format(**context),
@@ -190,7 +192,6 @@ class LemsCompTypeGenerator(NModlCompiler):
             var = p.variable
             expression = p.expression
             self.L.dxdt(var, expression.lems)
-
 
     # Utility methods
 

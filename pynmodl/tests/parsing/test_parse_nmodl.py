@@ -25,6 +25,8 @@ def test_neuron():
             NONSPECIFIC_CURRENT il
         }
 
+        INDEPENDENT {t FROM 0 TO 1 WITH 1 (ms)}
+
         PARAMETER {
             v (mV)
             celsius = 6.3 (degC)
@@ -105,7 +107,7 @@ def test_neuron():
         }
         """
     blocks = mm.model_from_str(p).blocks
-    title, units, neuron, parameter, state, assigned, breakpoint = blocks[:7]
+    title, units, neuron, indep, parameter, state, assigned, breakpoint = blocks[:8]
 
     s, g, ui_k, ui_na, r, n = neuron.statements
     assert([gg.name for gg in g.globals] ==
@@ -118,6 +120,8 @@ def test_neuron():
     assert([sv.name for sv in state.state_vars] == ['m', 'h', 'n'])
 
     assert(units.unit_defs[0].base_unit == '(millivolt)')
+
+    assert(indep.name == 't')
 
     p0 = parameter.parameters[0]
     assert(p0.name == 'v')

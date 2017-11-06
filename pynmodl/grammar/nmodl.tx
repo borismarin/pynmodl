@@ -11,6 +11,7 @@ import expressions
 import initial
 import keyword
 import table
+import independent
 
 Program: blocks*=NModlBlock;
 
@@ -19,6 +20,7 @@ NModlBlock: Title
 			| Neuron
 			| Parameter
 			| Assigned
+			| Independent
 			| State
 			| Initial
 			| Breakpoint

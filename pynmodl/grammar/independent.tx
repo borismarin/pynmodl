@@ -1,0 +1,10 @@
+import comment
+import units
+
+Independent: 'INDEPENDENT' '{'
+	name=ID 'FROM' from=FLOAT 'TO' to=FLOAT 'WITH' with=INT
+	('START' start=FLOAT)?
+	(unit=UnitId)? 
+	'}';
+
+

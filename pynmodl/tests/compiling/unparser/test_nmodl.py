@@ -4,7 +4,7 @@ from pynmodl.unparser import Unparser
 unp = Unparser().compile
 
 
-def test_neuron():
+def test_nmodl():
     src = dedent('''\
     TITLE gsquid.mod   squid sodium, potassium, and leak channels
     UNITS {

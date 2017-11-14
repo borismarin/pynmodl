@@ -97,6 +97,9 @@ def test_neuron():
             ninf = alpha/sum
             nexp = 1 - exp(tinc*sum)
         }
+        VERBATIM 
+            printf("fruit flies like a banana");
+        ENDVERBATIM
 
         FUNCTION vtrap(x,y) {  :Traps for 0 in denominator of rate eqns.
             if (fabs(x/y) < 1e-6) {
@@ -104,6 +107,9 @@ def test_neuron():
             }else{
                     vtrap = x/(exp(x/y) - 1)
             }
+            VERBATIM 
+                printf("fruit flies like a banana");
+            ENDVERBATIM
         }
         """
     blocks = mm.model_from_str(p).blocks

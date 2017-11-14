@@ -250,6 +250,15 @@ class Unparser(NModlCompiler):
     def handle_threadsafe(self, t):
         t.unparsed = 'THREADSAFE'
 
+    def handle_indep(self, ind):
+        ind.unparsed = "INDEPENDENT {{{} FROM {:g} TO {:g} WITH {:g}".format(
+            ind.name, ind.f, ind.t, ind.w)
+        if ind.s:
+            ind.unparsed += 'START ' + ind.s
+        if ind.u:
+            ind.unparsed += ' ' + ind.u
+        ind.unparsed += '}'
+
     def compile(self, mod):
         m = self.mm.model_from_str(mod)
         return m.unparsed

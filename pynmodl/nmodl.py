@@ -32,6 +32,8 @@ class NModlCompiler(object):
             'Write': self.handle_write,
             'Valence': self.handle_valence,
 
+            'Independent': self.handle_indep,
+
             # PARAMETER
             'Parameter': self.handle_parameter_blk,
             'ParDef': self.handle_param,
@@ -267,4 +269,7 @@ class NModlCompiler(object):
         pass
 
     def handle_threadsafe(self, node):
+        pass
+
+    def handle_indep(self, node):
         pass

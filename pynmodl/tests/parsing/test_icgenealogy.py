@@ -25,3 +25,14 @@ def test_kaxon():
 
     assert len(state.state_vars) == 1
     assert state.state_vars[0].name == 'n'
+
+
+def test_nainter():
+    from textx.exceptions import TextXSemanticError
+    try:
+        mm.model_from_file(get_sample('150288_nainter.mod'))
+    except TextXSemanticError as err:
+        assert 'gnaer' in str(err.args)
+        # 'RANGE gnaer' should be declared as either PARAMETER or ASSIGNED
+        # (even though nrnivmodl compiles it correctly)
+        #  https://www.neuron.yale.edu/neuron/static/docs/help/neuron/nmodl/nmodl2.html#RANGE

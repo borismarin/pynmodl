@@ -113,7 +113,7 @@ class Unparser(NModlCompiler):
 
     # BREAKPOINT BLOCK
     def handle_breakpoint_blk(self, bp):
-        bp.unparsed = 'BREAKPOINT ' + blockify(bp.statements)
+        bp.unparsed = 'BREAKPOINT ' + blockify(bp.b.stmts)
 
     def handle_solve(self, solve):
         meth = ' METHOD ' + solve.method if solve.method else ''

@@ -14,6 +14,7 @@ import table
 import independent
 import solvable_block
 import solve
+import kinetic
 
 Program: blocks*=NModlBlock;
 
@@ -26,6 +27,7 @@ NModlBlock: Title
 			| State
 			| Initial
 			| Breakpoint
+			| Kinetic
 			| Derivative
 			| FuncDef
 			| UnitsCtrl;

@@ -13,10 +13,11 @@ def test_initial():
         trates(v+vshift)
         m = minf
         h = hinf
+        SOLVE ks STEADYSTATE sparse
     }
     '''
     init = mm.model_from_str(nrn)
-    tadk, proc, m0, h0 = init.b.stmts
+    tadk, proc, m0, h0, solve = init.b.stmts
     fcall = children_of_type('FuncCall', proc)[0]
     assert(fcall.func.user.name == 'trates')
     assert(children_of_type('VarRef', h0.expression)[0].var.name == 'hinf')

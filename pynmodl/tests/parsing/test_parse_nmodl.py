@@ -5,7 +5,7 @@ mm = metamodel_from_file(
     os.path.join(os.path.dirname(__file__), '../../grammar/nmodl.tx'))
 
 
-def test_neuron():
+def test_full_nmodl():
     p = """
         TITLE adapted from an oldschool modfile bundled with nrn
         UNITS {
@@ -133,7 +133,7 @@ def test_neuron():
     assert(p0.name == 'v')
     assert(p0.unit == '(mV)')
 
-    solve = breakpoint.statements[0]
+    solve = breakpoint.b.stmts[0]
     assert solve.solve.name == 'states'  # this is the actual PROCEDURE
 
     states, rates, vtrap = blocks[-3:]

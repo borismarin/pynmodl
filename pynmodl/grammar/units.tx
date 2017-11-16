@@ -1,4 +1,4 @@
 import comment
 Units: 'UNITS' '{' unit_defs*=UnitDef '}';
 UnitDef: name=UnitId '=' base_unit=UnitId; //TODO: handle properly
-UnitId:  /\([1_a-zA-Z\/][_a-zA-Z0-9\/]*\)/;
+UnitId:  /\([1_a-zA-Z\/][_a-zA-Z0-9\/-]*\)/;

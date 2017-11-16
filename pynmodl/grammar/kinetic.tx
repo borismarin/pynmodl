@@ -1,7 +1,7 @@
 import comment
+import keyword
 import variable
 import expressions
-import derivative
 import state
 
 Kinetic: 'KINETIC' name=ID '{' statements*=KineticStatement '}';

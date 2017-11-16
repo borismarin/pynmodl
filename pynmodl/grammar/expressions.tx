@@ -5,7 +5,8 @@ import units
 import table
 
 Statement: Block | Primed | Assignment | IfStatement | WhileStatement |
-			Locals | Expression | FuncDef | Table | UnitsCtrl ;
+			Locals | Expression | FuncDef | Table | UnitsCtrl;
+
 Block: '{' stmts*=Statement '}';
 
 IfStatement: 'if' '(' cond=Expression ')'
@@ -34,7 +35,7 @@ Paren: ('(' ex=Expression ')');
 
 Local: name=cID;
 Locals: 'LOCAL' vars*=Local[','];
-FuncPar: name=cID (unit=UnitId)?; 
+FuncPar: name=cID (unit=UnitId)?;
 FuncDef:  (is_function?='FUNCTION' | is_procedure?='PROCEDURE')
 			name=cID '(' pars*=FuncPar[','] ')' (unit=UnitId)?  b=Block;
 
@@ -44,6 +45,3 @@ Exp: o='^';
 RelOp: o=/([<>]=?|[!=]=)/;
 LogCon: o=/(&&)|(\|\|)/;
 
-Builtin: 'sin' | 'cos' | 'tan' | 'exp' | 'log' | 'abs' | 'fabs';
-cID: !Keyword ID;
-NUMBER: /[-+]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?/;

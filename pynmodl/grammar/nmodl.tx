@@ -12,6 +12,8 @@ import initial
 import keyword
 import table
 import independent
+import solvable_block
+import solve
 
 Program: blocks*=NModlBlock;
 

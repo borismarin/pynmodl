@@ -1,6 +1,10 @@
 import os
+import glob
+from tempfile import gettempdir
+import git
 from textx.metamodel import metamodel_from_file
 from textx.model import children_of_type
+from textx.exceptions import TextXSemanticError
 
 
 mm = metamodel_from_file(
@@ -28,7 +32,6 @@ def test_kaxon():
 
 
 def test_nainter():
-    from textx.exceptions import TextXSemanticError
     try:
         mm.model_from_file(get_sample('150288_nainter.mod'))
     except TextXSemanticError as err:
@@ -36,3 +39,16 @@ def test_nainter():
         # 'RANGE gnaer' should be declared as either PARAMETER or ASSIGNED
         # (even though nrnivmodl compiles it correctly)
         #  https://www.neuron.yale.edu/neuron/static/docs/help/neuron/nmodl/nmodl2.html#RANGE
+        #
+
+
+def git_clone(repo_url):
+    dest = os.path.join(gettempdir(), repo_url.split('/')[-1].split('.')[0])
+    return git.Repo.clone_from(repo_url, dest)
+
+
+def test_all_k():
+    repo = git_clone('https://github.com/icgenealogy/icg-channels-K.git')
+    glob_mods = os.path.join(repo.working_dir, '**/*.mod')
+    for mod in glob.iglob(glob_mods):
+        print(mm.model_from_file(mod))

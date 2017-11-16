@@ -1,5 +1,5 @@
 xmltodict
-
+GitPython
 git+https://github.com/igordejanovic/textX#egg=textx
 git+https://github.com/igordejanovic/arpeggio#egg=arpeggio
 -e .

@@ -13,7 +13,7 @@ IfStatement: 'if' '(' cond=Expression ')'
 				true_blk=Block ('else' false_blk=Block)?;
 WhileStatement: 'while' '(' cond=Expression ')' Block;
 
-Primed: variable=cID/'+/ '='!'='? expression=LogicalCon;
+Primed: variable=ID/'+/ '='!'='? expression=LogicalCon;
 
 Expression: Assignment;
 Assignment: (variable=VarRef '='!'=')? expression=LogicalCon;
@@ -27,17 +27,17 @@ Primary: FuncCall | Paren | Num | VarRef ;
 
 
 Var: Local | FuncPar | Variable | FuncDef; // FuncDef here because of function return val syntax
-VarRef: var=[Var|cID];
+VarRef: var=[Var];
 Num: num=NUMBER (unit=UnitId)?;
-Func: builtin=Builtin | user=[FuncDef|cID];
+Func: builtin=Builtin | user=[FuncDef];
 FuncCall: func=Func '(' args*=Expression[',']  ')';
 Paren: ('(' ex=Expression ')');
 
-Local: name=cID;
+Local: name=ID;
 Locals: 'LOCAL' vars*=Local[','];
-FuncPar: name=cID (unit=UnitId)?;
+FuncPar: name=ID (unit=UnitId)?;
 FuncDef:  (is_function?='FUNCTION' | is_procedure?='PROCEDURE')
-			name=cID '(' pars*=FuncPar[','] ')' (unit=UnitId)?  b=Block;
+			name=ID '(' pars*=FuncPar[','] ')' (unit=UnitId)?  b=Block;
 
 PlusOrMinus: o=/\+|\-/;
 MulOrDiv: o=/\*|\//;

@@ -1,5 +1,6 @@
 import parameter
 import assigned
 import state
+import units
 
-Variable: AssignedDef | ParDef | StateVariable;
+Variable: UnitDef | AssignedDef | ParDef | StateVariable ;

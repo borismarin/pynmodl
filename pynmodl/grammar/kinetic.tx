@@ -6,10 +6,10 @@ import state
 
 Kinetic: 'KINETIC' name=ID '{' statements*=KineticStatement '}';
 KineticStatement: Reaction |  Conserve | Statement;
-Reaction: '~' reactant=[Variable|cID] '<->' product=[Variable|cID] '(' fwd=Expression ',' rev=Expression ')';
+Reaction: '~' reactant=[Variable] '<->' product=[Variable] '(' fwd=Expression ',' rev=Expression ')';
 Conserve: 'CONSERVE' reactants=React '=' val=Addition;
 
 React: op=Primary ('+' op=Primary)*;
-VarRef: var=[Variable|cID];
+VarRef: var=[Variable];
 Primary: INT VarRef | VarRef | INT;
 

@@ -23,6 +23,7 @@ NModlBlock: Title
 			| Units
 			| Neuron
 			| Parameter
+			| FunctionTable
 			| Assigned
 			| Independent
 			| State

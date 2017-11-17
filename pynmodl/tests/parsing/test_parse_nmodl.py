@@ -11,6 +11,7 @@ def test_full_nmodl():
         UNITS {
             (mV) = (millivolt)
             (mS) = (millisiemens)
+            F = (faraday) (coulomb)
         }
         COMMENT
             time flies like an arrow
@@ -40,7 +41,7 @@ def test_full_nmodl():
         }
 
         STATE {
-            m h n
+            m h n z<1e-4>
         }
 
         ASSIGNED {
@@ -74,7 +75,7 @@ def test_full_nmodl():
         }
         PROCEDURE rates(v) {  :Computes rate and other constants at current v.
                       :Call once from HOC to initialize inf at resting v.
-            LOCAL  q10, tinc, alpha, beta, sum
+            LOCAL  q10, tinc, alpha, beta, sum, tenF
             TABLE minf, mexp, hinf, hexp, ninf, nexp DEPEND dt, celsius FROM -100 TO 100 WITH 200
             q10 = 3^((celsius - 6.3)/10)
             tinc = -dt * q10
@@ -96,8 +97,9 @@ def test_full_nmodl():
             sum = alpha + beta
             ninf = alpha/sum
             nexp = 1 - exp(tinc*sum)
+            tenF = F * 10 
         }
-        VERBATIM 
+        VERBATIM
             printf("fruit flies like a banana");
         ENDVERBATIM
 
@@ -107,7 +109,7 @@ def test_full_nmodl():
             }else{
                     vtrap = x/(exp(x/y) - 1)
             }
-            VERBATIM 
+            VERBATIM
                 printf("fruit flies like a banana");
             ENDVERBATIM
         }
@@ -123,7 +125,7 @@ def test_full_nmodl():
     assert([w.name for w in ui_na.w.writes] == ['ina'])
     assert(ui_k.v.valence == 1)
 
-    assert([sv.name for sv in state.state_vars] == ['m', 'h', 'n'])
+    assert([sv.name for sv in state.state_vars] == ['m', 'h', 'n', 'z'])
 
     assert(units.unit_defs[0].base_units[0] == '(millivolt)')
 
@@ -138,3 +140,4 @@ def test_full_nmodl():
 
     states, rates, vtrap = blocks[-3:]
     assert(rates.b.stmts[1].tabbed[0].name == 'minf')
+

@@ -10,6 +10,7 @@ def test_nmodl():
     UNITS {
         (mA) = (milliamp)
         (mV) = (millivolt)
+        F = (faraday)(coulomb)
     }
     NEURON {
         SUFFIX hh1

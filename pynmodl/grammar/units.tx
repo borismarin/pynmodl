@@ -1,5 +1,5 @@
 import comment
 Units: 'UNITS' '{' unit_defs*=UnitDef '}';
-UnitDef: name=UnitName '=' base_units*=UnitId[eolterm]; //TODO: handle properly
+UnitDef: name=UnitName '=' (const=FLOAT)? base_units*=UnitId[eolterm]; //TODO: handle properly
 UnitName: ID | UnitId;
 UnitId:  /\([1_a-zA-Z\/][ _a-zA-Z0-9\/-]*\)/;

@@ -30,5 +30,6 @@ NModlBlock: Title
 			| Breakpoint
 			| Kinetic
 			| Derivative
-			| FuncDef;
+			| FuncDef
+			| Locals;
 

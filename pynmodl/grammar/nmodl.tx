@@ -19,6 +19,7 @@ import kinetic
 Program: blocks*=NModlBlock;
 
 NModlBlock: Title
+			| UnitsCtrl
 			| Units
 			| Neuron
 			| Parameter
@@ -29,6 +30,5 @@ NModlBlock: Title
 			| Breakpoint
 			| Kinetic
 			| Derivative
-			| FuncDef
-			| UnitsCtrl;
+			| FuncDef;
 

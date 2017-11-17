@@ -4,8 +4,8 @@ import variable
 import units
 import table
 
-Statement: Block | Primed | Assignment | IfStatement | WhileStatement |
-			Locals | Expression | FuncDef | Table | UnitsCtrl;
+Statement: UnitsCtrl | Locals | Table | FuncDef | Block | Primed | IfStatement |
+		 WhileStatement | Expression;
 
 Block: '{' stmts*=Statement '}';
 

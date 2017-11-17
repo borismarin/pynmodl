@@ -39,7 +39,8 @@ class Unparser(NModlCompiler):
         ublk.unparsed = 'UNITS ' + blockify(ublk.unit_defs)
 
     def handle_unit_def(self, udef):
-        udef.unparsed = ' '.join((udef.name, '=', udef.base_unit))
+        base_unit = ''.join(udef.base_units)
+        udef.unparsed = ' '.join((udef.name, '=', base_unit))
 
     def handle_unit_ctrl(self, uc):
         uc.unparsed = 'UNITSON' if uc.units_on else 'UNITSOFF'

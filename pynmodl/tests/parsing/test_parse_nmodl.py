@@ -125,7 +125,7 @@ def test_full_nmodl():
 
     assert([sv.name for sv in state.state_vars] == ['m', 'h', 'n'])
 
-    assert(units.unit_defs[0].base_unit == '(millivolt)')
+    assert(units.unit_defs[0].base_units[0] == '(millivolt)')
 
     assert(indep.name == 't')
 

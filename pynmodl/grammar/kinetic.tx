@@ -5,8 +5,10 @@ import expressions
 import state
 
 Kinetic: 'KINETIC' name=ID '{' statements*=KineticStatement '}';
-KineticStatement: Reaction |  Conserve | Statement;
+KineticStatement: KS |  Conserve | Statement;
+KS: Reaction | Flux;
 Reaction: '~' reactant=[Variable] '<->' product=[Variable] '(' fwd=Expression ',' rev=Expression ')';
+Flux: '~' reactant=[Variable] '<<' flux=Expression;
 Conserve: 'CONSERVE' reactants=React '=' val=Addition;
 
 React: op=Primary ('+' op=Primary)*;

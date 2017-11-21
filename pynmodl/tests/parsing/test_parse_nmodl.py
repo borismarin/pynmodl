@@ -139,5 +139,5 @@ def test_full_nmodl():
     assert solve.solve.name == 'states'  # this is the actual PROCEDURE
 
     states, rates, vtrap = blocks[-3:]
-    assert(rates.b.stmts[1].tabbed[0].name == 'minf')
+    assert(rates.b.stmts[1].tabbed[0].var.name == 'minf')
 

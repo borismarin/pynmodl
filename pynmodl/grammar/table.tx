@@ -1,8 +1,9 @@
 import variable
 import units
+import keyword
 
-Table: 'TABLE' tabbed+=[Variable][','] depend=Depends? f=From t=To w=With;
-Depends: 'DEPEND' deps*=[Variable][','];
+Table: 'TABLE' tabbed*=SafeVar[','] depend=Depends? f=From t=To w=With;
+Depends: 'DEPEND' deps*=SafeVar[','];
 From: 'FROM' val=FloatOrVar;
 To: 'TO' val=FloatOrVar;
 With: 'WITH' val=IntOrVar;
@@ -13,3 +14,5 @@ FunctionTable: 'FUNCTION_TABLE' name=ID '(' pars+=TablePar[','] ')' (unit=UnitId
 FloatOrVar: FLOAT | ID;
 IntOrVar: INT | ID;
 
+KW: 'DEPEND ' | 'WITH ' | 'FROM ' | 'TO ';
+SafeVar: !KW var=[Variable];

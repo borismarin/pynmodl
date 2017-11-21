@@ -1,5 +1,5 @@
 Keyword: 'if' | 'else' | 'while' | 'FUNCTION' | 'LOCAL' |
-		 'SOLVE' | 'TABLE' | Threadsafe |  UnitsCtrl;
+		 'SOLVE' | 'TABLE' | 'DEPEND' | Threadsafe |  UnitsCtrl;
 UnitsCtrl: units_on='UNITSON' |  units_off='UNITSOFF';
 Threadsafe: t='THREADSAFE';
 

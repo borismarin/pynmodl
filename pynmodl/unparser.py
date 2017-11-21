@@ -16,6 +16,8 @@ class Unparser(NModlCompiler):
         def deref(ref):
             if isinstance(ref, str):
                 return ref
+            elif type(ref).__name__ == 'SafeVar':
+                return ref.var.name
             else:  # should be ref
                 return ref.name
         return ', '.join(deref(el) for el in leest)
@@ -242,6 +244,9 @@ class Unparser(NModlCompiler):
 
     def handle_with(self, wit):
         wit.unparsed = 'WITH ' + str(wit.val)
+
+    def handle_safevar(self, sv):
+        sv.unparsed = sv.var.unparsed
 
     def handle_primed(self, p):
         var = p.variable

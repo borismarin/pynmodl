@@ -64,6 +64,7 @@ class NModlCompiler(object):
             'From': self.handle_from,
             'To': self.handle_to,
             'With': self.handle_with,
+            'SafeVar': self.handle_safevar,
             'Addition': self.handle_addition,
             'Multiplication': self.handle_multiplication,
             'Exponentiation': self.handle_exponentiation,
@@ -272,4 +273,7 @@ class NModlCompiler(object):
         pass
 
     def handle_indep(self, node):
+        pass
+
+    def handle_safevar(self, node):
         pass

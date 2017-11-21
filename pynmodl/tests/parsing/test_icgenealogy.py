@@ -39,7 +39,6 @@ def test_nainter():
         # 'RANGE gnaer' should be declared as either PARAMETER or ASSIGNED
         # (even though nrnivmodl compiles it correctly)
         #  https://www.neuron.yale.edu/neuron/static/docs/help/neuron/nmodl/nmodl2.html#RANGE
-        #
 
 
 def git_clone(repo_url):
@@ -50,5 +49,14 @@ def git_clone(repo_url):
 def test_all_k():
     repo = git_clone('https://github.com/icgenealogy/icg-channels-K.git')
     glob_mods = os.path.join(repo.working_dir, '**/*.mod')
+    #glob_mods = '/tmp/icg-channels-K/**/*.mod'
     for mod in glob.iglob(glob_mods):
-        print(mm.model_from_file(mod))
+        print('Parsing ' + mod + '...', end='')
+        if mod.split('/')[-1] in ['105385_kleak_gp.mod', '150288_nainter.mod']:
+            # 105385_kleak_gp.mod, 150288_nainter.mod
+            #   these modfiles declare RANGE variables without corresponding
+            #   PARAMETER or ASSIGNED declarations
+            print(' '.join(['Skipping', mod,
+                            ', known to contain semantic errors.']))
+        else:
+            print(mm.model_from_file(mod))

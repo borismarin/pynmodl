@@ -56,4 +56,7 @@ def test_funcdef_units():
 
 @pytest.mark.skip(reason="TODO!")
 def test_literal_unit():
-    print(unp('tadj = q10^((celsius - temp)/(10 (degC)))'))
+    assert compstmt('LOCAL t, c  t=3^(c/(10 (degC)))') == dedent('''
+    LOCAL t, c
+    t = 3 ^ (c / (10 (degC) )
+    ''')

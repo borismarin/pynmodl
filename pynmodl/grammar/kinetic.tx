@@ -4,8 +4,8 @@ import variable
 import expressions
 import state
 
-KS: Reaction | Flux | Compartment;
 Kinetic: 'KINETIC' name=ID '{' statements*=KineticStatement '}';
+KS: Reaction | Flux | Compartment;
 KineticStatement: KS |  Conserve | Statement;
 Reaction: '~' reactant=[Variable] '<->' product=[Variable] '(' fwd=Expression ',' rev=Expression ')';
 Flux: '~' reactant=[Variable] '<<' flux=Expression;

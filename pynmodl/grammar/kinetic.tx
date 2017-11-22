@@ -4,12 +4,12 @@ import variable
 import expressions
 import state
 
+KS: Reaction | Flux | Compartment;
 Kinetic: 'KINETIC' name=ID '{' statements*=KineticStatement '}';
 KineticStatement: KS |  Conserve | Statement;
-KS: Reaction | Flux | Compartment;
 Reaction: '~' reactant=[Variable] '<->' product=[Variable] '(' fwd=Expression ',' rev=Expression ')';
 Flux: '~' reactant=[Variable] '<<' flux=Expression;
-Compartment: 'COMPARTMENT' volume=Expression '{' states+=[StateVariable][','] '}';
+Compartment: 'COMPARTMENT' volume=Expression '{' states+=[StateVariable] '}';
 
 Conserve: 'CONSERVE' reactants=React '=' val=Addition;
 

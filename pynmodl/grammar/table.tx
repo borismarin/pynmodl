@@ -1,6 +1,7 @@
 import variable
 import units
 import keyword
+import local
 
 Table: 'TABLE' tabbed*=SafeVar[','] depend=Depends? f=From t=To w=With;
 Depends: 'DEPEND' deps*=SafeVar[','];
@@ -15,4 +16,5 @@ FloatOrVar: FLOAT | ID;
 IntOrVar: INT | ID;
 
 KW: 'DEPEND ' | 'WITH ' | 'FROM ' | 'TO ';
-SafeVar: !KW var=[Variable];
+V: Local | Variable;
+SafeVar: !KW var=[V];

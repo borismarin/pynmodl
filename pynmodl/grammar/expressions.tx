@@ -3,6 +3,7 @@ import keyword
 import variable
 import units
 import table
+import local
 
 Statement: UnitsCtrl | Locals | Table | FuncDef | Block | Primed | IfStatement |
 		 WhileStatement | Expression;
@@ -34,8 +35,6 @@ Callable: builtin=Builtin  | user=[Func];
 FuncCall: func=Callable '(' args*=Expression[',']  ')';
 Paren: ('(' ex=Expression ')');
 
-Local: name=ID;
-Locals: 'LOCAL' vars*=Local[','];
 FuncPar: name=ID (unit=UnitId)?;
 FuncDef:  (is_function?='FUNCTION' | is_procedure?='PROCEDURE')
 			name=ID '(' pars*=FuncPar[','] ')' (unit=UnitId)?  b=Block;

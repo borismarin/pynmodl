@@ -15,6 +15,7 @@ import independent
 import solvable_block
 import solve
 import kinetic
+import local
 
 Program: blocks*=NModlBlock;
 

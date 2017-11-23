@@ -1,0 +1,2 @@
+Local: name=ID;
+Locals: 'LOCAL' vars*=Local[','];

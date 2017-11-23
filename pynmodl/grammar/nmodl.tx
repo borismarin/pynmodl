@@ -3,6 +3,7 @@ import title
 import neuron
 import state
 import parameter
+import constant
 import units
 import assigned
 import derivative
@@ -24,6 +25,7 @@ NModlBlock: Title
 			| Units
 			| Neuron
 			| Parameter
+			| Constant
 			| FunctionTable
 			| Assigned
 			| Independent

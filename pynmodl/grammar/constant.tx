@@ -1,0 +1,10 @@
+import comment
+import units
+
+Constant: 'CONSTANT' '{' constants*=ConstDef '}';
+ConstDef: name=ID ('=' value=FLOAT)?  (unit=UnitId)?;
+
+
+
+
+

@@ -121,9 +121,9 @@ def test_full_nmodl():
     assert([gg.name for gg in g.globals] ==
            ['minf', 'hinf', 'ninf', 'mexp', 'hexp', 'nexp'])
     assert(s.suffix == 'hh1')
-    assert([r.name for r in ui_k.r.reads] == ['ek'])
-    assert([w.name for w in ui_na.w.writes] == ['ina'])
-    assert(ui_k.v.valence == 1)
+    assert([r.name for r in ui_k.r[0].reads] == ['ek'])
+    assert([w.name for w in ui_na.w[0].writes] == ['ina'])
+    assert(ui_k.v[0].valence == 1)
 
     assert([sv.name for sv in state.state_vars] == ['m', 'h', 'n', 'z'])
 

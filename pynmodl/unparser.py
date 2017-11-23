@@ -74,9 +74,9 @@ class Unparser(NModlCompiler):
     def handle_useIon(self, use_ion):
         # UseIon: 'USEION' ion=ID (r=Read | w=Write | v=Valence)*;
         ion = 'USEION ' + use_ion.ion
-        reads = use_ion.r.unparsed if use_ion.r else ''
-        writes = use_ion.w.unparsed if use_ion.w else ''
-        valence = use_ion.v.unparsed if use_ion.v else ''
+        reads = use_ion.r[0].unparsed if use_ion.r else ''
+        writes = use_ion.w[0].unparsed if use_ion.w else ''
+        valence = use_ion.v[0].unparsed if use_ion.v else ''
         use_ion.unparsed = ' '.join([ion, reads, writes, valence]).rstrip()
 
     def handle_read(self, read):
@@ -244,9 +244,6 @@ class Unparser(NModlCompiler):
 
     def handle_with(self, wit):
         wit.unparsed = 'WITH ' + str(wit.val)
-
-    def handle_safevar(self, sv):
-        sv.unparsed = sv.var.unparsed
 
     def handle_primed(self, p):
         var = p.variable

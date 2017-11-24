@@ -1,2 +1,2 @@
 import verbatim
-Comment: /COMMENT[\s\S]*?ENDCOMMENT|:.*/ | Verbatim;
+Comment: /COMMENT[\s\S]*?ENDCOMMENT|[:?].*/ | Verbatim;

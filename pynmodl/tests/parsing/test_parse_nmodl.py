@@ -120,7 +120,14 @@ def test_full_nmodl():
         FUNCTION vtrap(x,y) {  :Traps for 0 in denominator of rate eqns.
             if (fabs(x/y) < 1e-6) {
                     vtrap = y*(1 - x/y/2)
-            }else{
+                    }
+            else if (2 < 1) {
+                : bang!!!
+            }
+            else if ( 3 == 2 ) {
+                : bang again!!!
+            }
+            else{
                     vtrap = x/(exp(x/y) - 1)
             }
             VERBATIM
@@ -164,3 +171,8 @@ def test_full_nmodl():
 
     from_to = init.b.stmts[-1]
     assert from_to.counter == 'j'
+
+    vtrap = blocks[-1]
+    assert len(vtrap.b.stmts[0].elif_blk) == 2
+    assert len(vtrap.b.stmts[0].elif_cond) == 2
+    1/0

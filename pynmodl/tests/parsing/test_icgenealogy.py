@@ -1,13 +1,15 @@
 import os
 import glob
+import pytest
 from tempfile import gettempdir
 import git
 from textx.metamodel import metamodel_from_file
 from textx.model import children_of_type
 from textx.exceptions import TextXSemanticError
 
-
-mm = metamodel_from_file(
+@pytest.fixture
+def mm():
+    return metamodel_from_file(
     os.path.join(os.path.dirname(__file__), '../../grammar/nmodl.tx'))
 
 
@@ -16,7 +18,7 @@ def get_sample(fname):
                         '../sample_mods/icgenealogy', fname)
 
 
-def test_kaxon():
+def test_kaxon(mm):
     blocks = mm.model_from_file(get_sample('123815_Kaxon.mod')).blocks
     (units, neuron, indep, parameter, state,
         assigned, initial, breakpoint) = blocks[:8]
@@ -31,7 +33,7 @@ def test_kaxon():
     assert state.state_vars[0].name == 'n'
 
 
-def test_nainter():
+def test_nainter(mm):
     try:
         mm.model_from_file(get_sample('150288_nainter.mod'))
     except TextXSemanticError as err:
@@ -46,17 +48,34 @@ def git_clone(repo_url):
     return git.Repo.clone_from(repo_url, dest)
 
 
-def test_all_k():
+@pytest.mark.xfail
+def test_all_k(mm):
     repo = git_clone('https://github.com/icgenealogy/icg-channels-K.git')
     glob_mods = os.path.join(repo.working_dir, '**/*.mod')
-    #glob_mods = '/tmp/icg-channels-K/**/*.mod'
-    for mod in glob.iglob(glob_mods):
-        print('Parsing ' + mod + '...', end='')
-        if mod.split('/')[-1] in ['105385_kleak_gp.mod', '150288_nainter.mod']:
-            # 105385_kleak_gp.mod, 150288_nainter.mod
+    #glob_mods = '/tmp/icg-channels-K/*/*.mod'
+    for mod in glob.iglob(glob_mods, recursive=True):
+        print('Parsing ' + mod + '...', end=':')
+        if mod.split('/')[-1] in ['105385_kleak_gp.mod', '150288_nainter.mod',
+                                  '113446_kir.mod', '114685_AXNODE75.mod',
+                                  '119266_hha2.mod', '119266_hha_old.mod',
+                                  '123815_hha2.mod', '123815_hha_old.mod',
+                                  '123815_ichan2.mod', '123815_ichan2_icgK2.mod',
+                                  '124291_ichan2.mod', '124291_ichan2_icgK2.mod',
+                                  '124513_ichan2.mod']:
+            # Reasons for skipping:
+            # 105385_kleak_gp.mod, 150288_nainter.mod, 114685_AXNODE75.mod,
+            # 119266_hha2.mod, 119266_hha_old.mod, 123815_hha2.mod, 
+            # 123815_ichan2.mod, 123815_ichan2_icgK2.mod
+            # 124291_ichan2.mod, 124291_ichan2_icgK2.mod 123815_hha_old.mod,
+            # 124513_ichan2.mod: 
             #   these modfiles declare RANGE variables without corresponding
             #   PARAMETER or ASSIGNED declarations
+            # 113446_kir.mod: qna in COMPARTMENT statement is not a state var
             print(' '.join(['Skipping', mod,
                             ', known to contain semantic errors.']))
         else:
-            print(mm.model_from_file(mod))
+            try:
+                print(mm.model_from_file(mod))
+            except UnicodeDecodeError:
+                print(mm.model_from_file(mod, encoding='iso-8859-1'))
+

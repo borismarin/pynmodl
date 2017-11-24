@@ -28,7 +28,7 @@ Primary: FuncCall | Paren | Num | VarRef ;
 
 
 Var: Local | FuncPar | Variable | FuncDef; // FuncDef here because of function return val syntax
-VarRef: var=[Var];
+VarRef: var=[Var] ('[' idx=Expression ']')?;
 Num: num=NUMBER (unit=UnitId)?;
 Func: FuncDef | FunctionTable;
 Callable: builtin=Builtin  | user=[Func];

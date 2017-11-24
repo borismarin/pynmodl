@@ -1,5 +1,6 @@
 import os
 from textx.metamodel import metamodel_from_file
+from textx.model import children_of_type
 
 mm = metamodel_from_file(
     os.path.join(os.path.dirname(__file__), '../../grammar/nmodl.tx'))
@@ -42,6 +43,7 @@ def test_full_nmodl():
 
         STATE {
             m h n z<1e-4>
+            w[2]
         }
 
         ASSIGNED {
@@ -49,6 +51,7 @@ def test_full_nmodl():
             ik (mA/cm2)
             il (mA/cm2)
             minf hinf ninf mexp hexp nexp
+            x[3]
         }
 
         BREAKPOINT {
@@ -56,6 +59,8 @@ def test_full_nmodl():
             ina = gnabar*m*m*m*h*(v - ena)
             ik = gkbar*n*n*n*n*(v - ek)
             il = gl*(v - el)
+            x[0] = 1
+            x[1+1] = x[0] + 2
         }
 
         UNITSOFF
@@ -65,6 +70,8 @@ def test_full_nmodl():
             m = minf
             h = hinf
             n = ninf
+            w[0] = 0
+            w[1] = 1
         }
 
         PROCEDURE states() {  :Computes state variables m, h, and n
@@ -72,6 +79,11 @@ def test_full_nmodl():
            m = m + mexp*(minf-m)
            h = h + hexp*(hinf-h)
            n = n + nexp*(ninf-n)
+           LOCAL i[2]
+           i[0] = 0
+           i[1] = 1
+           w[i[0]] = w[0] + dt * w[i[1]]
+           w[1] = w[1] - dt * w[0]
         }
         PROCEDURE rates(v) {  :Computes rate and other constants at current v.
                       :Call once from HOC to initialize inf at resting v.
@@ -125,7 +137,9 @@ def test_full_nmodl():
     assert([w.name for w in ui_na.w[0].writes] == ['ina'])
     assert(ui_k.v[0].valence == 1)
 
-    assert([sv.name for sv in state.state_vars] == ['m', 'h', 'n', 'z'])
+    assert([sv.name for sv in state.state_vars] == ['m', 'h', 'n', 'z', 'w'])
+    w = state.state_vars[-1]
+    assert w.len == 2
 
     assert(units.unit_defs[0].base_units[0] == '(millivolt)')
 
@@ -140,4 +154,8 @@ def test_full_nmodl():
 
     states, rates, vtrap = blocks[-3:]
     assert(rates.b.stmts[1].tabbed[0].var.name == 'minf')
+    w_update = states.b.stmts[-1]
+
+    assert w_update.variable.var.name == 'w'
+    assert children_of_type('Num', w_update.variable.idx)[0].num == '1'
 

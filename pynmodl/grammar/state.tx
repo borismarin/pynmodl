@@ -2,4 +2,4 @@ import comment
 import units
 
 State: 'STATE' '{' state_vars*=StateVariable '}';
-StateVariable: name=ID (unit=UnitId)? ('<' llim=FLOAT (',' ulim=FLOAT)? '>')?;
+StateVariable: name=ID ('[' len=INT ']')? (unit=UnitId)? ('<' llim=FLOAT (',' ulim=FLOAT)? '>')?;

@@ -4,4 +4,4 @@ import state
 import constant
 import units
 
-Variable: UnitDef | ConstDef | AssignedDef | ParDef | StateVariable ;
+Variable: UnitDef | ConstDef | AssignedDef | ParDef | StateVariable;

@@ -3,4 +3,5 @@ Keyword: 'if' | 'else' | 'while' | 'FUNCTION' | 'LOCAL' |
 UnitsCtrl: units_on='UNITSON' |  units_off='UNITSOFF';
 Threadsafe: t='THREADSAFE';
 
-Builtin: ('sin' | 'cos' | 'tan' | 'exp' | 'log' | 'abs' | 'fabs' | 'normrand') & '(';
+Builtin: ('sin' | 'cos' | 'tan' | 'exp' | 'log' | 'abs' |
+			'fabs' | 'normrand' | 'floor') & '(';

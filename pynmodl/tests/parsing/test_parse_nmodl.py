@@ -66,12 +66,14 @@ def test_full_nmodl():
         UNITSOFF
 
         INITIAL {
+            LOCAL j
             rates(v)
             m = minf
             h = hinf
             n = ninf
-            w[0] = 0
-            w[1] = 1
+            FROM j = 0 TO 1/1 {
+                w[j] = 0
+            }
         }
 
         PROCEDURE states() {  :Computes state variables m, h, and n
@@ -127,7 +129,8 @@ def test_full_nmodl():
         }
         """
     blocks = mm.model_from_str(p).blocks
-    title, units, neuron, indep, parameter, state, assigned, breakpoint = blocks[:8]
+    (title, units, neuron, indep, parameter, state, assigned, breakpoint,
+     _, init) = blocks[:10]
 
     s, g, ui_k, ui_na, r, n = neuron.statements
     assert([gg.name for gg in g.globals] ==
@@ -159,3 +162,5 @@ def test_full_nmodl():
     assert w_update.variable.var.name == 'w'
     assert children_of_type('Num', w_update.variable.idx)[0].num == '1'
 
+    from_to = init.b.stmts[-1]
+    assert from_to.counter == 'j'

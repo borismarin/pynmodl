@@ -6,13 +6,14 @@ import table
 import local
 
 Statement: UnitsCtrl | Locals | Table | FuncDef | Block | Primed | IfStatement |
-		 WhileStatement | Expression;
+		 WhileStatement | FromStatement | Expression;
 
 Block: '{' stmts*=Statement '}';
 
 IfStatement: 'if' '(' cond=Expression ')'
 				true_blk=Block ('else' false_blk=Block)?;
-WhileStatement: 'while' '(' cond=Expression ')' Block;
+WhileStatement: 'while' '(' cond=Expression ')' b=Block;
+FromStatement: 'FROM' counter=ID '=' from=Expression 'TO' to=Expression b=Block;
 
 Primed: variable=ID/'+/ '='!'='? expression=LogicalCon;
 
@@ -28,10 +29,10 @@ Primary: FuncCall | Paren | Num | VarRef ;
 
 
 Var: Local | FuncPar | Variable | FuncDef; // FuncDef here because of function return val syntax
-VarRef: var=[Var] ('[' idx=Expression ']')?;
+VarRef: 'usetable' | var=[Var] ('[' idx=Expression ']')?;
 Num: num=NUMBER (unit=UnitId)?;
 Func: FuncDef | FunctionTable;
-Callable: builtin=Builtin  | user=[Func];
+Callable: builtin=Builtin | user=[Func];
 FuncCall: func=Callable '(' args*=Expression[',']  ')';
 Paren: ('(' ex=Expression ')');
 

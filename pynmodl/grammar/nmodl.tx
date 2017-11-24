@@ -17,6 +17,7 @@ import solvable_block
 import solve
 import kinetic
 import local
+import include
 
 Program: blocks*=NModlBlock;
 
@@ -35,5 +36,6 @@ NModlBlock: Title
 			| Kinetic
 			| Derivative
 			| FuncDef
-			| Locals;
+			| Locals
+			| Include;
 

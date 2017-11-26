@@ -5,4 +5,4 @@ Threadsafe: t='THREADSAFE';
 
 Builtin: ('sin' | 'cos' | 'tan' | 'exp' | 'log' | 'abs' |
 			'fabs' | 'normrand' | 'floor' | 'scop_random' |
-			'sqrt') & '(';
+			'sqrt' | 'ceil') & '(';

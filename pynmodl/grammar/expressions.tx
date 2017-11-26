@@ -15,7 +15,8 @@ IfStatement: 'if' '(' cond=Expression ')'
 				('else if' '(' elif_cond=Expression ')' elif_blk=Block)* 
 				('else' false_blk=Block)?;
 WhileStatement: 'while' '(' cond=Expression ')' b=Block;
-FromStatement: 'FROM' counter=ID '=' from=Expression 'TO' to=Expression b=Block;
+FromStatement: 'FROM' counter=FromCounter '=' from=Expression 'TO' to=Expression b=Block;
+FromCounter: name=ID;
 
 Primed: variable=ID/'+/ '='!'='? expression=LogicalCon;
 
@@ -29,7 +30,7 @@ Exponentiation: op=Negation (op=Exp op=Exponentiation)?; //using Exponentiation?
 Negation: (sign=PlusOrMinus)?  primary=Primary;
 Primary: FuncCall | Paren | Num | VarRef ;
 
-Var: Local | FuncPar | Variable | FuncDef; // FuncDef here because of function return val syntax
+Var: Local | FuncPar | Variable | FuncDef | FromCounter; // FuncDef here because of function return val syntax
 VarRef:  var=[Var] ('[' idx=Expression ']')?;
 
 Num: num=NUMBER (unit=UnitId)?;

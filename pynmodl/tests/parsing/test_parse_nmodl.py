@@ -170,7 +170,7 @@ def test_full_nmodl():
     assert children_of_type('Num', w_update.variable.idx)[0].num == '1'
 
     from_to = init.b.stmts[-1]
-    assert from_to.counter == 'j'
+    assert from_to.counter.name == 'j'
 
     vtrap = blocks[-1]
     assert len(vtrap.b.stmts[0].elif_blk) == 2

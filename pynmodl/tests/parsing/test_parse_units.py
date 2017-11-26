@@ -9,8 +9,8 @@ def test_unit():
     from textwrap import dedent
     u = dedent('''UNITS {
         (mV) = (millivolt)
-        (mA) = (milliamp)
-        F = (faraday) (coulomb)
+        (mA) = (milliamp) :nana
+        F = (faraday) (coulomb) :blblblalla
         R = (mole k) (mV-coulomb/degC)
     }
     ''')

@@ -2,7 +2,8 @@ import comment
 import units
 
 Constant: 'CONSTANT' '{' constants*=ConstDef '}';
-ConstDef: name=ID ('=' value=FLOAT)?  (unit=UnitId)?;
+ConstDef: name=ID ('=' value=NUMBER)?  (unit=UnitId)?;
+NUMBER: /[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?/;
 
 
 

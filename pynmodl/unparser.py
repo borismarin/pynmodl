@@ -100,11 +100,12 @@ class Unparser(NModlCompiler):
     def handle_param(self, pd):
         pd.unparsed = pd.name
         if pd.value:
-            pd.unparsed += ' = {:g}'.format(pd.value)
+            pd.unparsed += ' = {:g}'.format(float(pd.value))
         if pd.unit:
             pd.unparsed += ' ' + pd.unit
         if (pd.llim and pd.ulim):
-            pd.unparsed += ' <{}, {}>'.format(str(pd.llim), str(pd.ulim))
+            pd.unparsed += ' <{:g}, {:g}>'.format(float(pd.llim),
+                                                  float(pd.ulim))
 
     # ASSIGNED block
     def handle_assigned_blk(self, ablk):

@@ -3,4 +3,4 @@ Units: 'UNITS' '{' unit_defs*=UnitDef '}';
 UnitDef: name=UnitName '=' (const=FLOAT)? !':'base_units+=BaseUnit; //TODO: handle properly
 UnitName: ID | UnitId;
 BaseUnit: UnitId !'=';
-UnitId:  /\([ _a-zA-Z0-9\.\^\/-]*\)/;
+UnitId:  /\([ _a-zA-Z0-9.^*\/-]*\)/;

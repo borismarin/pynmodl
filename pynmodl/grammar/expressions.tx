@@ -10,11 +10,16 @@ Statement: UnitsCtrl | Locals | Table | FuncDef | Block | Primed | IfStatement |
 
 Block: '{' stmts*=Statement '}';
 
-IfStatement: 'if' '(' cond=Expression ')'
+IfStatement: IF '(' cond=Expression ')'
 				true_blk=Block
-				('else if' '(' elif_cond=Expression ')' elif_blk=Block)* 
-				('else' false_blk=Block)?;
-WhileStatement: 'while' '(' cond=Expression ')' b=Block;
+				(ELSEIF '(' elif_cond=Expression ')' elif_blk=Block)* 
+				(ELSE false_blk=Block)?;
+WhileStatement: WHILE '(' cond=Expression ')' b=Block;
+IF: 'if' | 'IF';
+WHILE: 'while' | 'WHILE';
+ELSE: 'else' | 'ELSE';
+ELSEIF: 'else if' | 'ELSE IF';
+
 FromStatement: 'FROM' counter=FromCounter '=' from=Expression 'TO' to=Expression b=Block;
 FromCounter: name=ID;
 

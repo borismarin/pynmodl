@@ -3,6 +3,7 @@ import title
 import neuron
 import state
 import parameter
+import constant
 import units
 import assigned
 import derivative
@@ -14,19 +15,27 @@ import table
 import independent
 import solvable_block
 import solve
+import kinetic
+import local
+import include
 
 Program: blocks*=NModlBlock;
 
 NModlBlock: Title
+			| UnitsCtrl
 			| Units
 			| Neuron
 			| Parameter
+			| Constant
+			| FunctionTable
 			| Assigned
 			| Independent
 			| State
 			| Initial
 			| Breakpoint
+			| Kinetic
 			| Derivative
 			| FuncDef
-			| UnitsCtrl;
+			| Locals
+			| Include;
 

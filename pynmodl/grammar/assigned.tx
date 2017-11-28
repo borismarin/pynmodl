@@ -2,4 +2,4 @@ import comment
 import units
 
 Assigned: 'ASSIGNED' '{'assigneds*=AssignedDef'}';
-AssignedDef: name=ID (unit=UnitId)?;
+AssignedDef: name=ID ('[' len=INT ']')? (unit=UnitId)?;

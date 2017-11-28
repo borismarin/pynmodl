@@ -2,7 +2,6 @@
 x86_64
 
 # simulation results
-*.dat
 simulator.props
 
 # Byte-compiled / optimized / DLL files

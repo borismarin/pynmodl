@@ -3,8 +3,8 @@ import variable
 import keyword
 
 Neuron: 'NEURON' '{' statements*=NRNStat '}';
-NRNStat: Suffix | Global | Range | Pointer |
-		 External | Nonspecific | UseIon | Threadsafe;
+NRNStat: Threadsafe | Suffix | Global | Range | Pointer |
+		 External | Nonspecific | UseIon;
 Suffix: 'SUFFIX' suffix=ID;
 Global: 'GLOBAL' globals+=[Variable][','];
 Range: 'RANGE' ranges+=[Variable][','];

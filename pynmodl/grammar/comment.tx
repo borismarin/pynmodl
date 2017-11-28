@@ -1,2 +1,3 @@
 import verbatim
-Comment: /COMMENT[\s\S]*?ENDCOMMENT|:.*/ | Verbatim;
+Comment: /COMMENT[\s\S]*?ENDCOMMENT|[:?].*/ | PrintF |Verbatim;
+PrintF: 'printf' /\(\".*\"(,.*)*\)/;

@@ -1,7 +1,8 @@
 Keyword: 'if' | 'else' | 'while' | 'FUNCTION' | 'LOCAL' |
-		 'SOLVE' | 'TABLE' | Threadsafe |  UnitsCtrl;
+		 'SOLVE' | 'TABLE' | 'DEPEND' | Threadsafe |  UnitsCtrl;
 UnitsCtrl: units_on='UNITSON' |  units_off='UNITSOFF';
 Threadsafe: t='THREADSAFE';
 
-Builtin: 'sin' | 'cos' | 'tan' | 'exp' | 'log' | 'abs' | 'fabs';
-cID: !Keyword ID;
+Builtin: ('sin' | 'cos' | 'tan' | 'exp' | 'log' | 'abs' |
+			'fabs' | 'normrand' | 'floor' | 'scop_random' |
+			'sqrt' | 'ceil' | 'set_seed' | 'pow') & '(';

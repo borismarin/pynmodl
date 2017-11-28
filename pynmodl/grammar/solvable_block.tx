@@ -4,4 +4,4 @@ import solve
 import expressions
 
 SolvableBlock: '{' stmts*=SolvableBlockStmt '}';
-SolvableBlockStmt: Statement | Solve;
+SolvableBlockStmt:  Solve | Statement;

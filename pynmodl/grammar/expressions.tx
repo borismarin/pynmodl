@@ -3,17 +3,27 @@ import keyword
 import variable
 import units
 import table
+import local
 
-Statement: Block | Primed | Assignment | IfStatement | WhileStatement |
-			Locals | Expression | FuncDef | Table | UnitsCtrl;
+Statement: UnitsCtrl | Locals | Table | FuncDef | Block | Primed | IfStatement |
+		 WhileStatement | FromStatement | Expression;
 
 Block: '{' stmts*=Statement '}';
 
-IfStatement: 'if' '(' cond=Expression ')'
-				true_blk=Block ('else' false_blk=Block)?;
-WhileStatement: 'while' '(' cond=Expression ')' Block;
+IfStatement: IF '(' cond=Expression ')'
+				true_blk=Block
+				(ELSEIF '(' elif_cond=Expression ')' elif_blk=Block)* 
+				(ELSE false_blk=Block)?;
+WhileStatement: WHILE '(' cond=Expression ')' b=Block;
+IF: 'if' | 'IF';
+WHILE: 'while' | 'WHILE';
+ELSE: 'else' | 'ELSE';
+ELSEIF: 'else if' | 'ELSE IF';
 
-Primed: variable=cID/'+/ '='!'='? expression=LogicalCon;
+FromStatement: 'FROM' counter=FromCounter '=' from=Expression 'TO' to=Expression b=Block;
+FromCounter: name=ID;
+
+Primed: variable=ID/'+/ '='!'='? expression=LogicalCon;
 
 Expression: Assignment;
 Assignment: (variable=VarRef '='!'=')? expression=LogicalCon;
@@ -25,19 +35,18 @@ Exponentiation: op=Negation (op=Exp op=Exponentiation)?; //using Exponentiation?
 Negation: (sign=PlusOrMinus)?  primary=Primary;
 Primary: FuncCall | Paren | Num | VarRef ;
 
+Var: Local | FuncPar | Variable | FuncDef | FromCounter; // FuncDef here because of function return val syntax
+VarRef:  var=[Var] ('[' idx=Expression ']')?;
 
-Var: Local | FuncPar | Variable | FuncDef; // FuncDef here because of function return val syntax
-VarRef: var=[Var|cID];
 Num: num=NUMBER (unit=UnitId)?;
-Func: builtin=Builtin | user=[FuncDef|cID];
-FuncCall: func=Func '(' args*=Expression[',']  ')';
+Func: FuncDef | FunctionTable;
+Callable: builtin=Builtin | user=[Func];
+FuncCall: func=Callable '(' args*=Expression[',']  ')';
 Paren: ('(' ex=Expression ')');
 
-Local: name=cID;
-Locals: 'LOCAL' vars*=Local[','];
-FuncPar: name=cID (unit=UnitId)?;
+FuncPar: name=ID (unit=UnitId)?;
 FuncDef:  (is_function?='FUNCTION' | is_procedure?='PROCEDURE')
-			name=cID '(' pars*=FuncPar[','] ')' (unit=UnitId)?  b=Block;
+			name=ID '(' pars*=FuncPar[','] ')' (unit=UnitId)?  b=Block;
 
 PlusOrMinus: o=/\+|\-/;
 MulOrDiv: o=/\*|\//;
@@ -45,4 +54,4 @@ Exp: o='^';
 RelOp: o=/([<>]=?|[!=]=)/;
 LogCon: o=/(&&)|(\|\|)/;
 
-NUMBER: /[-+]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?/;
+NUMBER: /[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?/;

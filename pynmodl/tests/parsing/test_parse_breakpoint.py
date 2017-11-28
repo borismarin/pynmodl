@@ -14,9 +14,11 @@ def test_breakpoint():
         ina = gnabar*m*h*(v - ena)
         ik = gkbar*n*(v - ek)
         il = gl*(v - el)
+        ifa = forb*(whilec - ifd)
+        x = expo(v)
     }
     """
     breakpoint = mm.model_from_str(s)
-    solve, ina, ik, il = breakpoint.b.stmts
+    solve, ina, ik, il, ifa, x = breakpoint.b.stmts
     assert solve.solve.name == 'states'
     assert children_of_type('VarRef', ina)[0].var.name == 'ina'

@@ -16,6 +16,8 @@ class Unparser(NModlCompiler):
         def deref(ref):
             if isinstance(ref, str):
                 return ref
+            elif type(ref).__name__ == 'SafeVar':
+                return ref.var.name
             else:  # should be ref
                 return ref.name
         return ', '.join(deref(el) for el in leest)
@@ -39,7 +41,8 @@ class Unparser(NModlCompiler):
         ublk.unparsed = 'UNITS ' + blockify(ublk.unit_defs)
 
     def handle_unit_def(self, udef):
-        udef.unparsed = ' '.join((udef.name, '=', udef.base_unit))
+        base_unit = ''.join(udef.base_units)
+        udef.unparsed = ' '.join((udef.name, '=', base_unit))
 
     def handle_unit_ctrl(self, uc):
         uc.unparsed = 'UNITSON' if uc.units_on else 'UNITSOFF'
@@ -71,9 +74,9 @@ class Unparser(NModlCompiler):
     def handle_useIon(self, use_ion):
         # UseIon: 'USEION' ion=ID (r=Read | w=Write | v=Valence)*;
         ion = 'USEION ' + use_ion.ion
-        reads = use_ion.r.unparsed if use_ion.r else ''
-        writes = use_ion.w.unparsed if use_ion.w else ''
-        valence = use_ion.v.unparsed if use_ion.v else ''
+        reads = use_ion.r[0].unparsed if use_ion.r else ''
+        writes = use_ion.w[0].unparsed if use_ion.w else ''
+        valence = use_ion.v[0].unparsed if use_ion.v else ''
         use_ion.unparsed = ' '.join([ion, reads, writes, valence]).rstrip()
 
     def handle_read(self, read):
@@ -97,11 +100,12 @@ class Unparser(NModlCompiler):
     def handle_param(self, pd):
         pd.unparsed = pd.name
         if pd.value:
-            pd.unparsed += ' = {:g}'.format(pd.value)
+            pd.unparsed += ' = {:g}'.format(float(pd.value))
         if pd.unit:
             pd.unparsed += ' ' + pd.unit
         if (pd.llim and pd.ulim):
-            pd.unparsed += ' <{}, {}>'.format(str(pd.llim), str(pd.ulim))
+            pd.unparsed += ' <{:g}, {:g}>'.format(float(pd.llim),
+                                                  float(pd.ulim))
 
     # ASSIGNED block
     def handle_assigned_blk(self, ablk):

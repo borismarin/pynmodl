@@ -19,6 +19,10 @@ def test_stmt():
     assert compstmt('LOCAL a a = 10') == 'LOCAL a\na = 10'
 
 
+def test_naming():
+    assert compstmt('LOCAL ifa, elseb') == 'LOCAL ifa, elseb'
+
+
 def test_pow():
     assert compstmt('1^(2 * 3)') == '1 ^ (2 * 3)'
 
@@ -52,4 +56,7 @@ def test_funcdef_units():
 
 @pytest.mark.skip(reason="TODO!")
 def test_literal_unit():
-    print(unp('tadj = q10^((celsius - temp)/(10 (degC)))'))
+    assert compstmt('LOCAL t, c  t=3^(c/(10 (degC)))') == dedent('''
+    LOCAL t, c
+    t = 3 ^ (c / (10 (degC) )
+    ''')

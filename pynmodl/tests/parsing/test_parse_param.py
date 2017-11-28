@@ -17,6 +17,6 @@ def test_neuron():
     pars = mm.model_from_str(p).parameters
     assert(pars[0].name == 'v')
     assert(pars[1].unit == '(degC)')
-    assert(pars[2].ulim == 0.1e3)
+    assert(float(pars[2].ulim) == 0.1e3)
 
 

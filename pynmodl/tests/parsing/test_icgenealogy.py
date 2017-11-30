@@ -52,17 +52,7 @@ def test_nainter(mm):
         #  https://www.neuron.yale.edu/neuron/static/docs/help/neuron/nmodl/nmodl2.html#RANGE
 
 
-def git_clone(repo_url):
-    dest = os.path.join(gettempdir(), repo_url.split('/')[-1].split('.')[0])
-    return git.Repo.clone_from(repo_url, dest)
-
-
 def test_all_k(mm):
-    def known_errors():
-        errs = os.path.join(os.path.dirname(__file__), 'icg-K-semanticErrors.dat')
-        with open(errs) as file:
-            lines = file.read().splitlines()
-        return set(lines)
 
     repo = git_clone('https://github.com/icgenealogy/icg-channels-K.git')
     glob_mods = os.path.join(repo.working_dir, '*/*.mod')
@@ -79,3 +69,36 @@ def test_all_k(mm):
                 #  handle single file with non-utf8 encoding
                 print(mm.model_from_file(mod, encoding='iso-8859-1'))
 
+@pytest.mark.skip
+def test_errors_against_original(mm):
+
+    def get_original_mod(icg_file):
+        #  chait will fill this up!
+        return '???'
+
+    errs = known_errors()
+    for err_mod in errs:
+        try:
+            mm.model_from_file(get_original_mod(err_mod))
+            print('semantic error introduced by modeldb translation')
+
+        # this is 0-order logic - need to dig into the Semantic Error
+        except TextXSemanticError:
+            print('both contain semantic errors!')
+        except Exception as e:
+            print('something else!!!!', e)
+
+
+
+# utility functions
+
+def git_clone(repo_url):
+    dest = os.path.join(gettempdir(), repo_url.split('/')[-1].split('.')[0])
+    return git.Repo.clone_from(repo_url, dest)
+
+
+def known_errors():
+    errs = os.path.join(os.path.dirname(__file__), 'icg-K-semanticErrors.dat')
+    with open(errs) as file:
+        lines = file.read().splitlines()
+    return set(lines)

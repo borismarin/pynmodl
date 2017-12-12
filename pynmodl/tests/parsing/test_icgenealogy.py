@@ -56,7 +56,7 @@ def git_clone(repo_url):
     dest = os.path.join(gettempdir(), repo_url.split('/')[-1].split('.')[0])
     return git.Repo.clone_from(repo_url, dest)
 
-
+@pytest.mark.slow
 def test_all_k(mm):
     def known_errors():
         errs = os.path.join(os.path.dirname(__file__), 'icg-K-semanticErrors.dat')

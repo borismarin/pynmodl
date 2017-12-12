@@ -1,7 +1,11 @@
 import comment
 import units
 Parameter: 'PARAMETER' '{'parameters*=ParDef'}';
-ParDef: name=ID ('=' value=FLOAT)?  (unit=UnitId)?  ('<' llim=FLOAT ',' ulim=FLOAT '>')?;
+ParDef: name=ID ('=' value=NUMBER)?  (unit=UnitId)?  ('<' llim=NUMBER ',' ulim=NUMBER '>')?;
+NUMBER: /[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?/;
+
+
+
 
 
 

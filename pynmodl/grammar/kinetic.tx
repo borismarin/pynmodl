@@ -1,0 +1,19 @@
+import comment
+import keyword
+import variable
+import expressions
+import state
+
+Kinetic: 'KINETIC' name=ID '{' statements*=KineticStatement '}';
+KS: Reaction | Flux | Compartment;
+KineticStatement: KS |  Conserve | Statement;
+Reaction: '~' reactant=[Variable] '<->' product=[Variable] '(' fwd=Expression ',' rev=Expression ')';
+Flux: '~' reactant=[Variable] '<<' flux=Expression;
+Compartment: 'COMPARTMENT' volume=Expression '{' states+=[StateVariable] '}';
+
+Conserve: 'CONSERVE' reactants=React '=' val=Addition;
+
+React: op=Primary ('+' op=Primary)*;
+VarRef: var=[Variable];
+Primary: INT VarRef | VarRef | INT;
+

@@ -20,9 +20,9 @@ def test_neuron():
     s, g, u, r, n = mm.model_from_str(nrn).statements
     assert([gg.name for gg in g.globals] == ['minf', 'hinf'])
     assert(s.suffix == 'hh1')
-    assert([r.name for r in u.r.reads] == ['ek'])
-    assert([w.name for w in u.w.writes] == ['ik'])
-    assert(u.v.valence == 1)
+    assert([r.name for r in u.r[0].reads] == ['ek'])
+    assert([w.name for w in u.w[0].writes] == ['ik'])
+    assert(u.v[0].valence == 1)
 
 
 def test_multiple():

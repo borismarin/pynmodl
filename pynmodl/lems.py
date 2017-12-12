@@ -116,7 +116,7 @@ class LemsCompTypeGenerator(NModlCompiler):
         self.binop(exp)
 
     def handle_num(self, num):
-        num.lems = num.num
+        num.lems = str(num.num)
 
     def handle_pm(self, pm):
         self.op(pm)

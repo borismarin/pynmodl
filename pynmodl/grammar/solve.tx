@@ -1,0 +1,8 @@
+import keyword
+import expressions
+import derivative
+import kinetic
+
+Solve: 'SOLVE' solve=[Solvable] (('METHOD'|'STEADYSTATE') method=ID)?;
+Method: 'derivimplicit' | 'sparse' | 'cnexp' | 'euler';
+Solvable: Derivative | Kinetic | FuncDef;

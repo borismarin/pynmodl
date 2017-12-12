@@ -9,11 +9,13 @@ def test_unit():
     from textwrap import dedent
     u = dedent('''UNITS {
         (mV) = (millivolt)
-        (mA) = (milliamp)
+        (mA) = (milliamp) :nana
+        F = (faraday) (coulomb) :blblblalla
+        R = (mole k) (mV-coulomb/degC)
     }
     ''')
     ud = mm.model_from_str(u).unit_defs[1]
     l = ud.name
-    r = ud.base_unit
+    r = ud.base_units[0]
     assert((l, r) == ('(mA)', '(milliamp)'))
 

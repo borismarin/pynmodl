@@ -4,12 +4,13 @@ from pynmodl.unparser import Unparser
 unp = Unparser().compile
 
 
-def test_neuron():
+def test_nmodl():
     src = dedent('''\
     TITLE gsquid.mod   squid sodium, potassium, and leak channels
     UNITS {
         (mA) = (milliamp)
         (mV) = (millivolt)
+        F = (faraday)(coulomb)
     }
     NEURON {
         SUFFIX hh1

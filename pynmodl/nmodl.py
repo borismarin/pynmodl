@@ -32,9 +32,15 @@ class NModlCompiler(object):
             'Write': self.handle_write,
             'Valence': self.handle_valence,
 
+            'Independent': self.handle_indep,
+
             # PARAMETER
             'Parameter': self.handle_parameter_blk,
             'ParDef': self.handle_param,
+
+            # CONSTANT
+            'Constant': self.handle_const_blk,
+            'ConstDef': self.handle_const,
 
             # ASSIGNED
             'Assigned': self.handle_assigned_blk,
@@ -62,6 +68,7 @@ class NModlCompiler(object):
             'From': self.handle_from,
             'To': self.handle_to,
             'With': self.handle_with,
+            'SafeVar': self.handle_safevar,
             'Addition': self.handle_addition,
             'Multiplication': self.handle_multiplication,
             'Exponentiation': self.handle_exponentiation,
@@ -160,6 +167,12 @@ class NModlCompiler(object):
         pass
 
     def handle_param(self, node):
+        pass
+
+    def handle_const_blk(self, pblk):
+        pass
+
+    def handle_const(self, node):
         pass
 
     def handle_assigned_blk(self, pblk):
@@ -267,4 +280,10 @@ class NModlCompiler(object):
         pass
 
     def handle_threadsafe(self, node):
+        pass
+
+    def handle_indep(self, node):
+        pass
+
+    def handle_safevar(self, node):
         pass

@@ -1,5 +1,6 @@
 import os
 from textx.metamodel import metamodel_from_file
+from pynmodl.scoping import scope_processor
 
 
 class NModlCompiler(object):
@@ -8,6 +9,8 @@ class NModlCompiler(object):
         self.mm = metamodel_from_file(
             os.path.join(curr_dir, 'grammar', 'nmodl.tx'),
             auto_init_attributes=False)
+
+        self.mm.register_model_processor(scope_processor)
 
         self.mm.register_obj_processors({
             'Program': self.handle_program,
@@ -125,7 +128,7 @@ class NModlCompiler(object):
                   'State', 'Initial', 'Breakpoint', 'Derivative'):
             blks = blocks_of_type(prog.blocks, b)
             if len(blks) > 1:
-                # TODO: proper validation 
+                # TODO: proper validation
                 print('Validation error:', 'multiple {} blocks'
                       .format(b.capitalize))
                 exit(1)

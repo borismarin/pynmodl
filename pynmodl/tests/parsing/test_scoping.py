@@ -1,37 +1,11 @@
 import os
 from textx.metamodel import metamodel_from_file
-from textx.model import children_of_type, parent_of_type
-
-
-def handle_refs(model, metamodel):
-    def enclosing_block(node):
-        return parent_of_type('Block', node) or \
-                parent_of_type('SolvableBlock', node)
-
-    def enclosing_func(node):
-        return parent_of_type('FuncDef', ref)
-
-    for ref in children_of_type('VarRef', model):
-        found = 0
-        scopes = [children_of_type('Local', enclosing_block(ref)),
-                  children_of_type('FuncPar', enclosing_func(ref)),
-                  children_of_type('StateVariable', model),
-                  children_of_type('ParDef', model),
-                  children_of_type('AssignedDef', model),
-                  children_of_type('ConstDef', model)]
-        for scope in scopes:
-            for var in scope:
-                if var.name == ref.var.name:
-                    ref.var = var
-                    found = True
-                    break
-            if found:
-                break
-
+from textx.model import children_of_type
+from pynmodl.scoping import scope_processor
 
 mm = metamodel_from_file(
     os.path.join(os.path.dirname(__file__), '../../grammar/nmodl.tx'))
-mm.register_model_processor(handle_refs)
+mm.register_model_processor(scope_processor)
 
 
 def refs_in(node):

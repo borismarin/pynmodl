@@ -1,6 +1,6 @@
+import pytest
 from pynmodl.lems import LemsCompTypeGenerator
 from xmlcomp import xml_compare
-import pytest
 
 
 def test_dx_func():
@@ -21,6 +21,30 @@ def test_dx_func():
         STATE { x }
         FUNCTION f(a){f=2*a}
         DERIVATIVE dx {x' = sin(f(3))}
+    ''')
+
+    assert(xml_compare(mod, lems))
+
+
+@pytest.mark.skip(reason="IN PROGRESS!")
+def test_v_scoping():
+    lems = '''
+    <ComponentType>
+      <Exposure name="x" dimension="none"/>
+      <Requirement name="v" dimension="none"/>
+      <Dynamics>
+        <StateVariable name="x" dimension="none"/>
+        <DerivedVariable name="f_x" value="- x"/>
+        <TimeDerivative value="f_x + v" variable="x"/>
+      </Dynamics>
+    </ComponentType>
+    '''
+
+    mod = LemsCompTypeGenerator().compile_to_string('''
+        PARAMETER { v }
+        STATE { x }
+        FUNCTION f(v){f=-v}
+        DERIVATIVE dx {x' = f(x) + v}
     ''')
 
     assert(xml_compare(mod, lems))
@@ -88,7 +112,6 @@ def test_double_funccall():
           </Dynamics>
         </ComponentType>
     '''
-    # TODO: test expr in func arguments
 
     mod = LemsCompTypeGenerator().compile_to_string('''
         PARAMETER {
@@ -107,6 +130,7 @@ def test_double_funccall():
         DERIVATIVE dx {x' = f(v) + f(v) - f(4)}
     ''')
     assert(xml_compare(mod, lems))
+
 
 def test_if():
     lems = '''
@@ -220,8 +244,8 @@ def test_if_inner_asgn():
     """)
     assert(xml_compare(mod, lems))
 
-#@pytest.mark.skip(reason="IN PROGRESS!")
-def test_nested_funcs():
+@pytest.mark.skip(reason="IN PROGRESS!")
+def test_nested_funccall():
     lems = '''
     <ComponentType>
       <Exposure name="n" dimension="none"/>
@@ -229,11 +253,12 @@ def test_nested_funcs():
       <Dynamics>
         <StateVariable name="n" dimension="none"/>
         <DerivedVariable name="alpha_v__x" value="(v + 55) / 10"/>
-        <ConditionalDerivedVariable name="alpha_v">
+        <ConditionalDerivedVariable name="aphla_alpha_v__x">
           <Case condition="fabs(alpha_v__x) .gt. 1e-6"
-                value="0.1*x/(1-exp(-x))"/>
-          <Case value="0.1/(1-0.5*x)"/>
+                value="0.1 * alpha_v__x / (1 - exp(- alpha_v__x))"/>
+          <Case value="0.1 / (1 - 0.5 * alpha_v__x)"/>
         </ConditionalDerivedVariable>
+        <DerivedVariable name="alpha_v" value="aphla_alpha_v__x"/>
         <TimeDerivative variable="n" value="alpha_v"/>
       </Dynamics>
     </ComponentType>'''
@@ -256,5 +281,39 @@ def test_nested_funcs():
         }
     }
     DERIVATIVE dn { n' = alpha(v)}
+    """)
+    assert(xml_compare(mod, lems))
+
+
+@pytest.mark.skip(reason="IN PROGRESS!")
+def test_expr_in_funccall():
+    lems = '''
+    <ComponentType>
+      <Exposure name="n" dimension="none"/>
+      <Requirement name="v" dimension="none"/>
+      <Dynamics>
+        <StateVariable name="n" dimension="none"/>
+        <DerivedVariable name="_x0" value="(v + 55) / 10"/>
+        <ConditionalDerivedVariable name="alpha_x0">
+          <Case condition="fabs(_x0) .gt. 1e-6"
+                value="0.1 * _x0 / (1 - exp( - _x0))"/>
+          <Case value="0.1 / (1 - 0.5 * _x0)"/>
+        </ConditionalDerivedVariable>
+        <TimeDerivative variable="n" value="alpha_args0"/>
+      </Dynamics>
+    </ComponentType>'''
+    mod = LemsCompTypeGenerator().compile_to_string("""
+    PARAMETER {
+        v (mV)
+    }
+    STATE { n }
+    FUNCTION alpha(x)(/ms){
+        if(fabs(x) > 1e-6){
+               alpha=0.1*x/(1-exp(-x))
+        }else{
+               alpha=0.1/(1-0.5*x)
+        }
+    }
+    DERIVATIVE dn { n' = alpha((v + 55)/10)}
     """)
     assert(xml_compare(mod, lems))

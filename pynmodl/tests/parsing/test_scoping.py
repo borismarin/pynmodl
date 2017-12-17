@@ -1,11 +1,11 @@
 import os
 from textx.metamodel import metamodel_from_file
 from textx.model import children_of_type
-from pynmodl.scoping import scope_processor
+from pynmodl.nmodl import NModlCompiler
 
 mm = metamodel_from_file(
     os.path.join(os.path.dirname(__file__), '../../grammar/nmodl.tx'))
-mm.register_model_processor(scope_processor)
+mm.register_obj_processors({'VarRef': NModlCompiler().handle_varref})
 
 
 def refs_in(node):

@@ -1,9 +1,13 @@
 from xml.etree.ElementTree import Element, tostring
 from xml.dom.minidom import parseString
+from itertools import count
 from textx.model import children_of_type, parent_of_type
 
 from pynmodl.nmodl import NModlCompiler
 from pynmodl.lems_helpers import ComponentTypeHelper, ComponentHelper
+
+# Global counters for generating variable names
+_arg_counter = count()  # counter for function arguments
 
 
 class LemsCompTypeGenerator(NModlCompiler):
@@ -49,6 +53,7 @@ class LemsCompTypeGenerator(NModlCompiler):
         return '{}_{}'.format(root, '_'.join(par_ph)) + s
 
     def handle_varref(self, var):
+        super().handle_varref(var)
         ivar = var.var
         if type(ivar).__name__ == 'FuncPar':
             lems = '{{{}}}'.format(ivar.name)
@@ -77,7 +82,6 @@ class LemsCompTypeGenerator(NModlCompiler):
 
     def handle_funccall(self, fc):
         args = [a.lems for a in fc.args]
-        #import pdb; pdb.set_trace()
         if fc.func.builtin:
             fun = fc.func.builtin
             lems = '{}({})'.format(fun, ', '.join(args))
@@ -176,16 +180,35 @@ class LemsCompTypeGenerator(NModlCompiler):
                            fasgn.expression.lems.format(**context))
             # TODO: multiple assignment to same var [x=y if(x<z){x=w}]
 
+    def process_user_func(self, func_call, scope={}):
+        # nested funcs need to access parent scope for arg passing
+        # if scope is present, it is being processed from the parent
+        if parent_of_type('FuncDef', func_call) and not scope:
+            return
+
+        args = [a.lems for a in func_call.args]
+        fun = func_call.func.user
+        arg_val = dict(zip([p.name for p in fun.pars], args))
+
+        if scope:
+            for arg in arg_val.values():
+                arg.format(**scope)
+
+        # if the function being called calls other funcs, process them
+        for cfc in children_of_type('FuncCall', fun):
+            if cfc.func.user:
+                self.process_user_func(cfc, arg_val)
+
+        if args not in fun.visited_with_args:
+            self.process_block(fun, arg_val)
+            fun.visited_with_args.append(args)
+
     def add_block_bodies(self, model, metamodel):
+
         # append function body for every function call
         for fc in children_of_type('FuncCall', model):
             if fc.func.user:
-                args = [a.lems for a in fc.args]
-                fun = fc.func.user
-                arg_val = dict(zip([p.name for p in fun.pars], args))
-                if args not in fun.visited_with_args:
-                    self.process_block(fun, arg_val)
-                    fun.visited_with_args.append(args)
+                self.process_user_func(fc)
 
     def add_derivatives(self, model, metamodel):
         for p in children_of_type('Primed', model):

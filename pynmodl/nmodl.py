@@ -1,6 +1,6 @@
 import os
 from textx.metamodel import metamodel_from_file
-from pynmodl.scoping import scope_processor
+from textx.model import children_of_type, parent_of_type
 
 
 class NModlCompiler(object):
@@ -9,8 +9,6 @@ class NModlCompiler(object):
         self.mm = metamodel_from_file(
             os.path.join(curr_dir, 'grammar', 'nmodl.tx'),
             auto_init_attributes=False)
-
-        self.mm.register_model_processor(scope_processor)
 
         self.mm.register_obj_processors({
             'Program': self.handle_program,
@@ -228,8 +226,35 @@ class NModlCompiler(object):
     def handle_num(self, node):
         pass
 
-    def handle_varref(self, node):
-        pass
+    def handle_varref(self, ref):
+        def populate_global_scope(root):
+            self.global_scope = children_of_type('StateVariable', root) +\
+                children_of_type('ParDef', root) +\
+                children_of_type('AssignedDef', root) +\
+                children_of_type('ConstDef', root)
+
+        def enclosing_block(node):
+            return parent_of_type('Block', node) or \
+                    parent_of_type('SolvableBlock', node)
+
+        def enclosing_func(node):
+            return parent_of_type('FuncDef', ref)
+
+        if getattr(self, 'global_scope', None) is None:
+            populate_global_scope(parent_of_type('Program', ref))
+
+        found = 0
+        scopes = [children_of_type('Local', enclosing_block(ref)),
+                  children_of_type('FuncPar', enclosing_func(ref))]
+        scopes.append(self.global_scope)
+        for scope in scopes:
+            for var in scope:
+                if var.name == ref.var.name:
+                    ref.var = var
+                    found = True
+                    break
+            if found:
+                break
 
     def handle_pm(self, node):
         pass

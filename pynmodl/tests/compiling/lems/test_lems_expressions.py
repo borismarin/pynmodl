@@ -26,7 +26,6 @@ def test_dx_func():
     assert(xml_compare(mod, lems))
 
 
-@pytest.mark.skip(reason="IN PROGRESS!")
 def test_v_scoping():
     lems = '''
     <ComponentType>
@@ -34,7 +33,7 @@ def test_v_scoping():
       <Requirement name="v" dimension="none"/>
       <Dynamics>
         <StateVariable name="x" dimension="none"/>
-        <DerivedVariable name="f_x" value="- x"/>
+        <DerivedVariable name="f_x" value=" - x"/>
         <TimeDerivative value="f_x + v" variable="x"/>
       </Dynamics>
     </ComponentType>

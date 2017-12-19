@@ -191,8 +191,8 @@ class LemsCompTypeGenerator(NModlCompiler):
         arg_val = dict(zip([p.name for p in fun.pars], args))
 
         if scope:
-            for arg in arg_val.values():
-                arg.format(**scope)
+            for val, arg in arg_val.items():
+                arg_val[val] = arg.format(**scope)
 
         # if the function being called calls other funcs, process them
         for cfc in children_of_type('FuncCall', fun):

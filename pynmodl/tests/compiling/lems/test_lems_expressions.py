@@ -243,7 +243,6 @@ def test_if_inner_asgn():
     """)
     assert(xml_compare(mod, lems))
 
-@pytest.mark.skip(reason="IN PROGRESS!")
 def test_nested_funccall():
     lems = '''
     <ComponentType>
@@ -252,12 +251,12 @@ def test_nested_funccall():
       <Dynamics>
         <StateVariable name="n" dimension="none"/>
         <DerivedVariable name="alpha_v__x" value="(v + 55) / 10"/>
-        <ConditionalDerivedVariable name="aphla_alpha_v__x">
+        <ConditionalDerivedVariable name="ahpla_alpha_v__x">
           <Case condition="fabs(alpha_v__x) .gt. 1e-6"
-                value="0.1 * alpha_v__x / (1 - exp(- alpha_v__x))"/>
+                value="0.1 * alpha_v__x / (1 - exp( - alpha_v__x))"/>
           <Case value="0.1 / (1 - 0.5 * alpha_v__x)"/>
         </ConditionalDerivedVariable>
-        <DerivedVariable name="alpha_v" value="aphla_alpha_v__x"/>
+        <DerivedVariable name="alpha_v" value="ahpla_alpha_v__x"/>
         <TimeDerivative variable="n" value="alpha_v"/>
       </Dynamics>
     </ComponentType>'''

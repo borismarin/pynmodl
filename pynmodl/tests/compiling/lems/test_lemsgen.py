@@ -8,4 +8,6 @@ with open(get_sample('kd.mod')) as f:
     from xml.dom import minidom
     print(minidom.parseString(mod2lems(f.read())).toprettyxml(indent="   "))
 
-    # http://python-xmlunittest.readthedocs.io/en/latest/xmlunittest.html#xml-documents-comparison-assertion
+with open(get_sample('na.mod')) as f:
+    from xml.dom import minidom
+    print(minidom.parseString(mod2lems(f.read())).toprettyxml(indent="   "))

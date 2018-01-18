@@ -2,7 +2,7 @@ import os
 from hack import metamodel_with_any_var
 from textx.model import children_of_type
 
-import model_utils as mu
+import pynmodl.model_utils as mu
 
 
 #  there's nothing special about 'initial' blocks - any other would do

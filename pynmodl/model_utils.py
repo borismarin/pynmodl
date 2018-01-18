@@ -25,3 +25,7 @@ def is_assignment(node):
 
 def is_composite(node):
     return len(children_of_type('Negation', node)) > 1
+
+
+def has_func_calls(node):
+    return len(children_of_type('FuncCall', node)) > 0

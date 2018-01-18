@@ -1,3 +1,4 @@
+import functools
 from xml.etree.ElementTree import Element, tostring
 from xml.dom.minidom import parseString
 from itertools import count
@@ -5,9 +6,7 @@ from textx.model import children_of_type, parent_of_type
 
 from pynmodl.nmodl import NModlCompiler
 from pynmodl.lems_helpers import ComponentTypeHelper, ComponentHelper
-
-# Global counters for generating variable names
-_arg_counter = count()  # counter for function arguments
+import pynmodl.model_utils as mu
 
 
 class LemsCompTypeGenerator(NModlCompiler):
@@ -17,6 +16,7 @@ class LemsCompTypeGenerator(NModlCompiler):
         self.L = ComponentTypeHelper()
         self.mm.register_model_processor(self.add_block_bodies)
         self.mm.register_model_processor(self.add_derivatives)
+        self._arg_counter = count()
 
     def handle_suffix(self, suf):
         self.L.comp_type.attrib['id'] = suf.suffix + '_lems'
@@ -49,7 +49,7 @@ class LemsCompTypeGenerator(NModlCompiler):
 
     def mangle_name(self, root, pars, suff=None):
         par_ph = ['{' + p.name + '}' for p in pars]
-        s = '__{}'.format(suff) if suff else ''
+        s = '::{}'.format(suff) if suff else ''
         return '{}_{}'.format(root, '_'.join(par_ph)) + s
 
     def handle_varref(self, var):
@@ -60,8 +60,10 @@ class LemsCompTypeGenerator(NModlCompiler):
         elif type(ivar).__name__ == 'FuncDef':
             lems = self.mangle_name(ivar.name, ivar.pars)
         elif type(ivar).__name__ == 'Local':
-            parent = parent_of_type('FuncDef', ivar)
-            lems = self.mangle_name(parent.name, parent.pars, ivar.name)
+            in_block = parent_of_type('Block', ivar)
+            parent = in_block.parent
+            lems = self.mangle_name(parent.name,
+                                    getattr(parent, 'pars', []), ivar.name)
         else:
             lems = ivar.name
         var.lems = lems
@@ -73,15 +75,35 @@ class LemsCompTypeGenerator(NModlCompiler):
             f.visited_with_args = []
 
     def handle_local(self, loc):
-        parent = parent_of_type('FuncDef', loc)
-        locname = self.mangle_name(parent.name, parent.pars, loc.name)
+        in_block = parent_of_type('Block', loc)
+        parent = in_block.parent
+        locname = self.mangle_name(parent.name,
+                                   getattr(parent, 'pars', []), loc.name)
         loc.lems = locname
 
     def handle_funcpar(self, fp):
         fp.lems = fp.name
 
     def handle_funccall(self, fc):
-        args = [a.lems for a in fc.args]
+        if getattr(fc, 'aux_vars', None) is None:
+            fc.aux_vars = {}
+
+        def make_aux():
+            return '_aux' + str(next(self._arg_counter))
+
+        def process_func_args(func_args):
+            args = []  # compiled args
+            for arg in func_args:
+                if mu.is_composite(arg) and not mu.has_func_calls(arg):
+                    # if there are inner func calls, auxs are already processed
+                    if arg.lems not in fc.aux_vars.keys():
+                        auxname = make_aux()
+                        args.append(auxname)
+                        fc.aux_vars[arg.lems] = auxname
+                else:
+                    args.append(arg.lems)
+            return args
+        args = process_func_args(fc.args)
         if fc.func.builtin:
             fun = fc.func.builtin
             lems = '{}({})'.format(fun, ', '.join(args))
@@ -123,7 +145,10 @@ class LemsCompTypeGenerator(NModlCompiler):
         num.lems = str(num.num)
 
     def handle_pm(self, pm):
-        self.op(pm)
+        if type(pm.parent).__name__ == 'Addition':
+            self.op(pm)
+        else:  # unary pm
+            pm.lems = pm.o
 
     def handle_md(self, md):
         self.op(md)
@@ -143,11 +168,9 @@ class LemsCompTypeGenerator(NModlCompiler):
     def handle_relop(self, r):
         self.op(r)
 
-    # _Model_ processors (all above are node listeners)
+    # **Model** processors (all above are node listeners)
 
     def process_block(self, root, context={}):
-        import functools
-
         def asgn_var(asgn):
             return functools.reduce(getattr, [asgn, 'variable', 'var'])
 
@@ -182,11 +205,18 @@ class LemsCompTypeGenerator(NModlCompiler):
 
     def process_user_func(self, func_call, scope={}):
         # nested funcs need to access parent scope for arg passing
-        # if scope is present, it is being processed from the parent
+        # (if scope is present, it is being processed from the parent)
+        # aux_vars are also inherited from parents
         if parent_of_type('FuncDef', func_call) and not scope:
             return
 
-        args = [a.lems for a in func_call.args]
+        args = []  # handle expressions in args that became aux variables
+        for arg in func_call.args:
+            try:
+                args.append(func_call.aux_vars[arg.lems])
+            except KeyError:
+                args.append(arg.lems)
+
         fun = func_call.func.user
         arg_val = dict(zip([p.name for p in fun.pars], args))
 
@@ -194,9 +224,12 @@ class LemsCompTypeGenerator(NModlCompiler):
             for val, arg in arg_val.items():
                 arg_val[val] = arg.format(**scope)
 
+        for val, aux_var in func_call.aux_vars.items():
+            self.L.dv(aux_var, val.format(**arg_val, **scope))
+
         # if the function being called calls other funcs, process them
         for cfc in children_of_type('FuncCall', fun):
-            if cfc.func.user:
+            if cfc.func.user:  # catch funcs and procedures, not builtins
                 self.process_user_func(cfc, arg_val)
 
         if args not in fun.visited_with_args:
@@ -205,7 +238,7 @@ class LemsCompTypeGenerator(NModlCompiler):
 
     def add_block_bodies(self, model, metamodel):
 
-        # append function body for every function call
+        # append function body for every function/procedure call
         for fc in children_of_type('FuncCall', model):
             if fc.func.user:
                 self.process_user_func(fc)

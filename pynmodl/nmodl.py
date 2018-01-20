@@ -1,6 +1,6 @@
 import os
 from textx.metamodel import metamodel_from_file
-from textx.model import children_of_type, parent_of_type
+from textx.model import children_of_type, parent_of_type, model_root
 
 
 class NModlCompiler(object):
@@ -240,13 +240,32 @@ class NModlCompiler(object):
         def enclosing_func(node):
             return parent_of_type('FuncDef', ref)
 
-        if getattr(self, 'global_scope', None) is None:
-            populate_global_scope(parent_of_type('Program', ref))
+        def block_locals(blk):
+            locs = []
+            # children_of_type recurses into children, we don't want that
+            for stmt in blk.stmts:
+                if type(stmt).__name__ == 'Locals':
+                    locs.extend(stmt.vars)
+            return locs
 
+        if getattr(self, 'global_scope', None) is None:
+            populate_global_scope(model_root(ref))
+
+        # this whole logic is inneficient, scopes should be built only once!
+        #  but we want to do it along with other obj processors (which come
+        #  before any model processing)
         found = 0
-        scopes = [children_of_type('Local', enclosing_block(ref)),
-                  children_of_type('FuncPar', enclosing_func(ref))]
-        scopes.append(self.global_scope)
+
+        block_chain = []  # pun intended
+        blk = enclosing_block(ref)
+        while blk:
+            block_chain += block_locals(blk)
+            blk = enclosing_block(blk)
+
+        scopes = [block_chain,
+                  children_of_type('FuncPar', enclosing_func(ref)),
+                  self.global_scope]
+
         for scope in scopes:
             for var in scope:
                 if var.name == ref.var.name:

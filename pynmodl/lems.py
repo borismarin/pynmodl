@@ -45,7 +45,6 @@ class LemsCompTypeGenerator(NModlCompiler):
         exp = asgn.expression
         if not var:
             asgn.lems = exp.lems
-        # asgn.visited = False
 
     def mangle_name(self, root, pars, suff=None):
         par_ph = [''] + ['{' + p.name + '}' for p in pars]
@@ -60,6 +59,7 @@ class LemsCompTypeGenerator(NModlCompiler):
         elif type(ivar).__name__ == 'FuncDef':
             lems = self.mangle_name(ivar.name, ivar.pars)
         elif type(ivar).__name__ == 'Local':
+            # there be dragons: 'if' blocks, for example, don't have names...
             in_block = parent_of_type('Block', ivar)
             parent = in_block.parent
             lems = self.mangle_name(parent.name,
@@ -237,6 +237,9 @@ class LemsCompTypeGenerator(NModlCompiler):
             fun.visited_with_args.append(args)
 
     def add_block_bodies(self, model, metamodel):
+        # derivative blocks
+        for dx in children_of_type('Derivative', model):
+            self.process_block(dx)
 
         # append function body for every function/procedure call
         for fc in children_of_type('FuncCall', model):

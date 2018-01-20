@@ -386,7 +386,6 @@ def test_multiple_call():
     assert(xml_compare(mod, lems))
 
 
-@pytest.mark.skip(reason='IN PROGRESS!')
 def test_scoping_mangling():
     lems = '''
     <ComponentType>
@@ -394,13 +393,15 @@ def test_scoping_mangling():
       <Requirement name="v" dimension="none"/>
       <Dynamics>
         <StateVariable name="n" dimension="none"/>
-        <DerivedVariable name="_aux0" value="(v + 55) / 10"/>
-        <ConditionalDerivedVariable name="alpha_aux0">
-          <Case condition="fabs(_aux0) .gt. 1e-6"
-                value="0.1 * _aux0 / (1 - exp(-_aux0))"/>
-          <Case value="0.1 / (1 - 0.5 * _aux0)"/>
+        <DerivedVariable name="dn::a" value="10"/>
+        <DerivedVariable name="_aux0" value="(v + 55) / dn::a"/>
+        <DerivedVariable name="alpha__aux0::a" value="0.1"/>
+        <ConditionalDerivedVariable name="alpha__aux0">
+            <Case condition="fabs(_aux0) .gt. alpha__aux0::a"
+                value="alpha__aux0::a * _aux0 / (1 - exp(-_aux0))"/>
+            <Case value="alpha__aux0::a / (1 - 0.5 * _aux0)"/>
         </ConditionalDerivedVariable>
-        <TimeDerivative variable="n" value="alpha_args0"/>
+        <TimeDerivative variable="n" value="alpha__aux0"/>
       </Dynamics>
     </ComponentType>'''
     mod = LemsCompTypeGenerator().compile_to_string("""

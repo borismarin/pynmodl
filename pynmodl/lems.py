@@ -45,12 +45,12 @@ class LemsCompTypeGenerator(NModlCompiler):
         exp = asgn.expression
         if not var:
             asgn.lems = exp.lems
-        asgn.visited = False
+        # asgn.visited = False
 
     def mangle_name(self, root, pars, suff=None):
-        par_ph = ['{' + p.name + '}' for p in pars]
+        par_ph = [''] + ['{' + p.name + '}' for p in pars]
         s = '::{}'.format(suff) if suff else ''
-        return '{}_{}'.format(root, '_'.join(par_ph)) + s
+        return root + '_'.join(par_ph) + s
 
     def handle_varref(self, var):
         super().handle_varref(var)

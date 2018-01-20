@@ -38,23 +38,11 @@ def test_scoping():
         }
 
         DERIVATIVE dx {
-            LOCAL a
-            a = 1
             x' = f(x) + v : v is par
         }
-
-        FUNCTION alpha(x)(/ms){
-            LOCAL a
-            a = 0.1
-            if(fabs(x) > a){
-                   alpha=a*x/(1-exp(-x))
-            }else{
-                   alpha=a/(1-0.5*x)
-            }
-         }
     """
     blocks = mm.model_from_str(p).blocks
-    (parameter, state, initial, function_f, derivative, alpha) = blocks
+    (parameter, state, initial, function_f, derivative) = blocks
 
     locals_in_init = children_of_type('Local', initial)
     assert refs_in(initial)[0].var == locals_in_init[0]
@@ -65,6 +53,30 @@ def test_scoping():
     assert type(refs_in(function_f)[-1].var).__name__ == 'FuncPar'
 
     assert refs_in(derivative)[-1].var == parameter.parameters[0]
+
+
+def test_multiple_locals():
+    p = """
+    PARAMETER {
+        v (mV)
+    }
+    STATE { n }
+    FUNCTION alpha(x)(/ms){
+        LOCAL a
+        a = 0.1
+        if(fabs(x) > a){
+               alpha=a*x/(1-exp(-x))
+        }else{
+               alpha=a/(1-0.5*x)
+        }
+    }
+    DERIVATIVE dn {
+        LOCAL a
+        a = 10
+        n' = alpha((v + 55)/a)}
+    """
+    blocks = mm.model_from_str(p).blocks
+    (parameter, state, alpha, dn) = blocks
 
     locals_in_alpha = children_of_type('Local', alpha)
     alpha_a = locals_in_alpha[0]

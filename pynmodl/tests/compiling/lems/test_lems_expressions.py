@@ -344,7 +344,6 @@ def test_aux_var():
     assert(xml_compare(mod, lems))
 
 
-@pytest.mark.skip(reason='IN PROGRESS!')
 def test_multiple_call():
     lems = '''
     <ComponentType>
@@ -352,17 +351,16 @@ def test_multiple_call():
       <Requirement name="v" dimension="none"/>
       <Dynamics>
         <StateVariable name="n" dimension="none"/>
-        <DerivedVariable name="_aux0" value="(v + 55) / 10"/>
-        <ConditionalDerivedVariable name="alpha_aux0">
-          <Case condition="fabs(_aux1) .gt. 1e-6"
-                value="0.1 * _aux0 / (1 - exp(-_aux0))"/>
-          <Case value="0.1 / (1 - 0.5 * _aux0)"/>
+        <DerivedVariable name="dn::x" value="(v + 55) / 10"/>
+        <ConditionalDerivedVariable name="alpha_id_dn::x">
+        <Case condition="fabs(id_id_dn::x) .gt. 1e-6"
+            value="0.1 * id_dn::x / (1 - exp(-id_dn::x))"/>
+            <Case value="0.1 / (1 - 0.5 * id_dn::x)"/>
         </ConditionalDerivedVariable>
-        <DerivedVariable name="_aux1" value="_aux0"/>
-        <DerivedVariable name="x" value="(v + 55) / 10"/>
-        <DerivedVariable name="id_x" value="x"/>
-        <DerivedVariable name="_aux0" value="id_x"/>
-        <TimeDerivative variable="n" value="alpha_aux0"/>
+        <DerivedVariable name="dn::x" value="(v + 55) / 10"/>
+        <DerivedVariable name="id_dn::x" value="dn::x"/>
+        <DerivedVariable name="id_id_dn::x" value="id_dn::x"/>
+        <TimeDerivative variable="n" value="alpha_id_dn::x"/>
       </Dynamics>
     </ComponentType>'''
     mod = LemsCompTypeGenerator().compile_to_string("""

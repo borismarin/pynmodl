@@ -103,11 +103,11 @@ class LemsCompTypeGenerator(NModlCompiler):
                 else:
                     args.append(arg.lems)
             return args
-        args = process_func_args(fc.args)
         if fc.func.builtin:
             fun = fc.func.builtin
-            lems = '{}({})'.format(fun, ', '.join(args))
+            lems = '{}({})'.format(fun, ', '.join(arg.lems for arg in fc.args))
         else:
+            args = process_func_args(fc.args)
             fun = fc.func.user
             if fun.is_function:
                 lems = '{}_{}'.format(fun.name, '_'.join(args))

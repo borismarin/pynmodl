@@ -1,5 +1,6 @@
 import os
 from textx.metamodel import metamodel_from_file
+from textx.model import children_of_type, parent_of_type, model_root
 
 
 class NModlCompiler(object):
@@ -125,7 +126,7 @@ class NModlCompiler(object):
                   'State', 'Initial', 'Breakpoint', 'Derivative'):
             blks = blocks_of_type(prog.blocks, b)
             if len(blks) > 1:
-                # TODO: proper validation 
+                # TODO: proper validation
                 print('Validation error:', 'multiple {} blocks'
                       .format(b.capitalize))
                 exit(1)
@@ -225,8 +226,54 @@ class NModlCompiler(object):
     def handle_num(self, node):
         pass
 
-    def handle_varref(self, node):
-        pass
+    def handle_varref(self, ref):
+        def populate_global_scope(root):
+            self.global_scope = children_of_type('StateVariable', root) +\
+                children_of_type('ParDef', root) +\
+                children_of_type('AssignedDef', root) +\
+                children_of_type('ConstDef', root)
+
+        def enclosing_block(node):
+            return parent_of_type('Block', node) or \
+                    parent_of_type('SolvableBlock', node)
+
+        def enclosing_func(node):
+            return parent_of_type('FuncDef', ref)
+
+        def block_locals(blk):
+            locs = []
+            # children_of_type recurses into children, we don't want that
+            for stmt in blk.stmts:
+                if type(stmt).__name__ == 'Locals':
+                    locs.extend(stmt.vars)
+            return locs
+
+        if getattr(self, 'global_scope', None) is None:
+            populate_global_scope(model_root(ref))
+
+        # this whole logic is inneficient, scopes should be built only once!
+        #  but we want to do it along with other obj processors (which come
+        #  before any model processing)
+        found = 0
+
+        block_chain = []  # pun intended
+        blk = enclosing_block(ref)
+        while blk:
+            block_chain += block_locals(blk)
+            blk = enclosing_block(blk)
+
+        scopes = [block_chain,
+                  children_of_type('FuncPar', enclosing_func(ref)),
+                  self.global_scope]
+
+        for scope in scopes:
+            for var in scope:
+                if var.name == ref.var.name:
+                    ref.var = var
+                    found = True
+                    break
+            if found:
+                break
 
     def handle_pm(self, node):
         pass

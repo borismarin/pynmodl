@@ -17,6 +17,7 @@ class LemsCompTypeGenerator(NModlCompiler):
         self.mm.register_model_processor(self.add_block_bodies)
         self.mm.register_model_processor(self.add_derivatives)
         self._arg_counter = count()
+        self.generated_aux = []
 
     def handle_suffix(self, suf):
         self.L.comp_type.attrib['id'] = suf.suffix + '_lems'
@@ -225,7 +226,9 @@ class LemsCompTypeGenerator(NModlCompiler):
                 arg_val[val] = arg.format(**scope)
 
         for val, aux_var in func_call.aux_vars.items():
-            self.L.dv(aux_var, val.format(**arg_val, **scope))
+            if aux_var not in self.generated_aux:
+                self.L.dv(aux_var, val.format(**arg_val, **scope))
+                self.generated_aux.append(aux_var)
 
         # if the function being called calls other funcs, process them
         for cfc in children_of_type('FuncCall', fun):

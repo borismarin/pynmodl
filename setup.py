@@ -14,4 +14,7 @@ setup(name='pynmodl',
       setup_requires=['pytest-runner'],
       install_requires=['textx', 'xmltodict'],
       tests_require=['pytest', 'textx', 'xmltodict'],
-      )
+      entry_points={
+          'console_scripts': ['pynmodl=pynmodl.cli:pynmodl']
+      },
+)
